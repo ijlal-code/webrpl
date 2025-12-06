@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    /**
+     * Halaman utama penumpang berisi jadwal dan rekomendasi perjalanan.
+     */
     public function dashboard()
     {
         $jadwal = JadwalSopir::with(['sopir.user', 'rute'])
@@ -15,13 +18,15 @@ class UserController extends Controller
             ->orderBy('jam_keberangkatan')
             ->get();
 
+        // Hitung rekomendasi dan pemetaan pesanan per jadwal agar tampilan lebih mudah dipahami.
         $rekomendasi = $this->buildRekomendasi(auth()->id());
 
         $pesananPerJadwal = Pesanan::where('user_id', auth()->id())
             ->get()
             ->keyBy('jadwal_id');
 
-        return view('dashboard.penumpang', [
+        // View dipindah ke folder penumpang agar struktur mengikuti peran pengguna.
+        return view('penumpang.dashboard', [
             'jadwal' => $jadwal,
             'rekomendasi' => $rekomendasi,
             'pesananPerJadwal' => $pesananPerJadwal,
@@ -32,6 +37,9 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Buat pesanan baru berdasarkan jadwal yang dipilih penumpang.
+     */
     public function buatPesanan(Request $request)
     {
         $data = $request->validate([
@@ -45,6 +53,7 @@ class UserController extends Controller
             return back()->withErrors(['jadwal_id' => 'Jadwal ini tidak tersedia untuk dipesan.']);
         }
 
+        // Pastikan penumpang tidak memesan jadwal yang sama lebih dari sekali.
         $sudahDipesan = Pesanan::where('user_id', auth()->id())
             ->where('jadwal_id', $jadwal->id)
             ->exists();
@@ -67,6 +76,9 @@ class UserController extends Controller
         return redirect()->route('penumpang.pesanan')->with('success', 'Pesanan berhasil dibuat.');
     }
 
+    /**
+     * Daftar pesanan penumpang beserta relasi pentingnya.
+     */
     public function pesanan()
     {
         return view('pesanan.index', [
@@ -76,6 +88,9 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Batalkan pesanan milik penumpang dengan alasan yang jelas.
+     */
     public function batalkanPesanan(Request $request, Pesanan $pesanan)
     {
         if ($pesanan->user_id !== auth()->id()) {
@@ -106,6 +121,9 @@ class UserController extends Controller
         return back()->with('success', 'Pesanan berhasil dibatalkan.');
     }
 
+    /**
+     * Hitung rekomendasi jadwal berdasarkan riwayat pemesanan penumpang.
+     */
     private function buildRekomendasi(int $userId)
     {
         $riwayat = Pesanan::select('rute_id', 'jam_keberangkatan')

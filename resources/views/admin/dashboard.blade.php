@@ -3,6 +3,8 @@
 @section('content')
 <div class="container py-4">
     <h1 class="mb-4">Dashboard Admin</h1>
+
+    {{-- Ringkasan angka kunci yang membantu admin membaca kondisi aplikasi sekilas --}}
     <div class="row g-3 mb-4">
         @foreach($statistik as $label => $value)
             <div class="col-6 col-md-4 col-lg-2">
@@ -16,6 +18,7 @@
         @endforeach
     </div>
 
+    {{-- Riwayat pesanan terbaru untuk memantau aktivitas pengguna --}}
     <h5>Pesanan Terbaru</h5>
     <div class="table-responsive shadow-sm rounded-3 bg-white mb-4">
         <table class="table table-striped mb-0 align-middle">
@@ -41,6 +44,7 @@
     </div>
 
     @isset($jadwalTerbaru)
+        {{-- Jadwal sopir terbaru membantu admin memastikan ketersediaan armada --}}
         <h5 class="mt-4">Monitoring Jadwal Sopir</h5>
         <div class="table-responsive shadow-sm rounded-3 bg-white mb-4">
             <table class="table table-bordered mb-0 align-middle">
@@ -67,6 +71,7 @@
     @endisset
 
     @isset($laporan)
+        {{-- Laporan lengkap untuk kebutuhan audit atau ekspor data --}}
         <div class="mt-4">
             <h5>Laporan Lengkap</h5>
             <div class="table-responsive shadow-sm rounded-3 bg-white">
@@ -97,6 +102,7 @@
             </div>
         </div>
 
+        {{-- Catatan diagram berbentuk teks agar pengembang mudah memahami alur sistem --}}
         <div class="mt-3">
             <h5>Diagram Teks</h5>
             <ul>

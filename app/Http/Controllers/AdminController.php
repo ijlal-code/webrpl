@@ -9,8 +9,12 @@ use App\Models\User;
 
 class AdminController extends Controller
 {
+    /**
+     * Tampilkan ringkasan performa operasional untuk admin.
+     */
     public function dashboard()
     {
+        // Ringkas jumlah entitas penting agar admin cepat melihat kondisi sistem.
         $statistik = [
             'penumpang' => User::where('role', 'penumpang')->count(),
             'sopir' => User::where('role', 'sopir')->count(),
@@ -19,15 +23,20 @@ class AdminController extends Controller
             'jadwal_aktif' => JadwalSopir::where('status', 'aktif')->count(),
         ];
 
-        return view('dashboard.admin', [
+        // Kirim data ke tampilan dashboard admin yang sudah diganti namanya lebih deskriptif.
+        return view('admin.dashboard', [
             'statistik' => $statistik,
             'pesananTerbaru' => Pesanan::with(['penumpang', 'rute'])->latest()->take(5)->get(),
             'jadwalTerbaru' => JadwalSopir::with(['sopir.user', 'rute'])->latest()->take(5)->get(),
         ]);
     }
 
+    /**
+     * Tampilkan laporan lengkap beserta diagram deskriptif proses bisnis.
+     */
     public function laporan()
     {
+        // Ambil seluruh data pesanan untuk laporan serta ilustrasi proses bisnis berbentuk teks.
         $pesanan = Pesanan::with(['penumpang', 'sopir', 'kendaraan', 'rute'])->get();
         $diagrams = [
             'dfd0' => 'Penumpang ->[Pesan]-> Sistem ->[Kelola]-> Admin',
@@ -38,7 +47,8 @@ class AdminController extends Controller
             'flowchart' => 'Mulai -> Login -> [Role?] Admin|Sopir|Penumpang -> Aksi sesuai role -> Selesai',
         ];
 
-        return view('dashboard.admin', [
+        // Tampilkan laporan pada halaman dashboard admin yang sama untuk konsistensi pengalaman.
+        return view('admin.dashboard', [
             'statistik' => [
                 'penumpang' => User::where('role', 'penumpang')->count(),
                 'sopir' => User::where('role', 'sopir')->count(),

@@ -19,8 +19,10 @@
         </div>
     @endif
 
+    {{-- Bagian jadwal dipisah ke partial untuk memudahkan perawatan UI --}}
     @include('sopir.partials.jadwal')
 
+    {{-- Daftar pesanan juga ditempatkan di partial terpisah agar struktur rapi --}}
     @include('sopir.partials.pesanan')
 </div>
 @endsection
