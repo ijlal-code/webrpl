@@ -129,6 +129,7 @@ class UserController extends Controller
         $search = trim($request->get('q', ''));
 
         $jadwal = JadwalSopir::with(['sopir.user', 'rute'])
+            ->whereIn('status', ['siap_berangkat', 'dalam_perjalanan'])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($subQuery) use ($search) {
                     $subQuery->whereHas('rute', function ($ruteQuery) use ($search) {

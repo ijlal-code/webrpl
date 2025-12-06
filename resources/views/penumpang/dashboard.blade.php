@@ -65,14 +65,14 @@
                     @php
                         $ringkasan = $jadwal->groupBy('status')->map->count();
                         $statusLabel = [
-                            'aktif' => 'Aktif menerima pesanan',
-                            'sedang_jalan' => 'Sedang berjalan',
-                            'tidak_aktif' => 'Tidak aktif',
+                            'siap_berangkat' => 'Siap berangkat',
+                            'dalam_perjalanan' => 'Dalam perjalanan',
+                            'selesai' => 'Selesai',
                         ];
                         $badgeClass = [
-                            'aktif' => 'success',
-                            'sedang_jalan' => 'warning',
-                            'tidak_aktif' => 'secondary',
+                            'siap_berangkat' => 'success',
+                            'dalam_perjalanan' => 'warning',
+                            'selesai' => 'secondary',
                         ];
                     @endphp
                     <div class="row text-center g-3">

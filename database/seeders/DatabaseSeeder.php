@@ -72,9 +72,9 @@ class DatabaseSeeder extends Seeder
         }
 
         $jadwal = collect([
-            ['sopir' => $sopirUsers[0] ?? null, 'rute' => $rute[0] ?? null, 'tanggal' => now()->toDateString(), 'jam' => '08:00', 'status' => 'aktif'],
-            ['sopir' => $sopirUsers[1] ?? null, 'rute' => $rute[1] ?? null, 'tanggal' => now()->toDateString(), 'jam' => '10:00', 'status' => 'sedang_jalan'],
-            ['sopir' => $sopirUsers[2] ?? null, 'rute' => $rute[2] ?? null, 'tanggal' => now()->addDay()->toDateString(), 'jam' => '14:00', 'status' => 'tidak_aktif'],
+            ['sopir' => $sopirUsers[0] ?? null, 'rute' => $rute[0] ?? null, 'tanggal' => now()->toDateString(), 'jam' => '08:00', 'status' => 'siap_berangkat'],
+            ['sopir' => $sopirUsers[1] ?? null, 'rute' => $rute[1] ?? null, 'tanggal' => now()->toDateString(), 'jam' => '10:00', 'status' => 'dalam_perjalanan'],
+            ['sopir' => $sopirUsers[2] ?? null, 'rute' => $rute[2] ?? null, 'tanggal' => now()->addDay()->toDateString(), 'jam' => '14:00', 'status' => 'selesai'],
         ])->filter(fn ($item) => $item['sopir'] && $item['rute'])
             ->map(fn ($item) => JadwalSopir::create([
                 'sopir_id' => $item['sopir']->id,

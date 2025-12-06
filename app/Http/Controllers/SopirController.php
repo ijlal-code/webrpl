@@ -83,7 +83,7 @@ class SopirController extends Controller
         $pesanan->update(['status' => 'selesai']);
 
         if ($pesanan->jadwal) {
-            $pesanan->jadwal->update(['status' => 'tidak_aktif']);
+            $pesanan->jadwal->update(['status' => 'selesai']);
         }
 
         return back()->with('success', 'Pesanan telah ditandai selesai.');
@@ -149,7 +149,7 @@ class SopirController extends Controller
             'custom_rute' => 'required_if:rute_pilihan,custom|nullable|string|max:255',
             'tanggal_keberangkatan' => 'required|date',
             'jam_keberangkatan' => 'required',
-            'status' => 'required|in:aktif,sedang_jalan,tidak_aktif',
+            'status' => 'required|in:siap_berangkat,dalam_perjalanan,selesai',
             'catatan' => 'nullable|string',
         ]);
 
@@ -184,7 +184,7 @@ class SopirController extends Controller
             'custom_rute' => 'required_if:rute_pilihan,custom|nullable|string|max:255',
             'tanggal_keberangkatan' => 'sometimes|required|date',
             'jam_keberangkatan' => 'sometimes|required',
-            'status' => 'required|in:aktif,sedang_jalan,tidak_aktif',
+            'status' => 'required|in:siap_berangkat,dalam_perjalanan,selesai',
             'catatan' => 'nullable|string',
         ]);
 

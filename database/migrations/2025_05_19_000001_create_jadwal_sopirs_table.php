@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('rute_id')->constrained('rutes')->cascadeOnDelete();
             $table->date('tanggal_keberangkatan');
             $table->time('jam_keberangkatan');
-            $table->enum('status', ['aktif', 'sedang_jalan', 'tidak_aktif'])->default('tidak_aktif');
+            $table->enum('status', ['siap_berangkat', 'dalam_perjalanan', 'selesai'])->default('siap_berangkat');
             $table->string('catatan')->nullable();
             $table->timestamps();
         });

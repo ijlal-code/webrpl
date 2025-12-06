@@ -74,9 +74,9 @@
                 <div>
                     <label class="form-label">Status</label>
                     <select name="status" class="form-select" required>
-                        <option value="aktif" @selected(old('status', $jadwal->status) === 'aktif')>Aktif</option>
-                        <option value="sedang_jalan" @selected(old('status', $jadwal->status) === 'sedang_jalan')>Sedang jalan</option>
-                        <option value="tidak_aktif" @selected(old('status', $jadwal->status) === 'tidak_aktif')>Tidak aktif</option>
+                        <option value="siap_berangkat" @selected(old('status', $jadwal->status) === 'siap_berangkat')>Siap Berangkat</option>
+                        <option value="dalam_perjalanan" @selected(old('status', $jadwal->status) === 'dalam_perjalanan')>Dalam Perjalanan</option>
+                        <option value="selesai" @selected(old('status', $jadwal->status) === 'selesai')>Selesai</option>
                     </select>
                 </div>
 
@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <a href="{{ route('sopir.dashboard') }}#jadwal-saya" class="btn btn-outline-secondary">Batal</a>
+                    <a href="{{ route('sopir.jadwal.index') }}" class="btn btn-outline-secondary">Batal</a>
                     <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
                 </div>
             </form>

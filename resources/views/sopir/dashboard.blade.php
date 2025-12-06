@@ -19,8 +19,11 @@
         </div>
     @endif
 
-    {{-- Bagian jadwal dipisah ke partial untuk memudahkan perawatan UI --}}
-    @include('sopir.partials.jadwal')
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6 col-xl-5">
+            @include('sopir.partials.jadwal-form')
+        </div>
+    </div>
 
     <div class="card mt-4">
         <div class="card-header">Aksi Cepat</div>

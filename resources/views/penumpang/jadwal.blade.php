@@ -36,9 +36,9 @@
 
     @php
         $badgeClass = [
-            'aktif' => 'success',
-            'sedang_jalan' => 'warning',
-            'tidak_aktif' => 'secondary',
+            'siap_berangkat' => 'success',
+            'dalam_perjalanan' => 'warning',
+            'selesai' => 'secondary',
         ];
     @endphp
 
@@ -69,7 +69,7 @@
                             <td>
                                 @if($pesananPerJadwal->has($item->id))
                                     <span class="badge text-bg-success">Sudah dipesan</span>
-                                @elseif($item->status === 'aktif')
+                                @elseif($item->status === 'siap_berangkat')
                                     <form method="POST" action="{{ route('penumpang.pesan') }}" class="d-flex flex-column flex-lg-row gap-2">
                                         @csrf
                                         <input type="hidden" name="jadwal_id" value="{{ $item->id }}">
