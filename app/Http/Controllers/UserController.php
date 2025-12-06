@@ -196,6 +196,18 @@ class UserController extends Controller
     }
 
     /**
+     * Hapus seluruh riwayat pesanan selesai atau dibatalkan milik pengguna.
+     */
+    public function bersihkanRiwayat()
+    {
+        Pesanan::where('user_id', auth()->id())
+            ->whereIn('status', ['selesai', 'dibatalkan'])
+            ->delete();
+
+        return back()->with('success', 'Semua riwayat pesanan dibersihkan.');
+    }
+
+    /**
      * Hitung rekomendasi jadwal berdasarkan riwayat pemesanan penumpang.
      */
     private function buildRekomendasi(int $userId)

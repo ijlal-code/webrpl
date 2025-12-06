@@ -41,6 +41,18 @@ class SopirController extends Controller
     }
 
     /**
+     * Tampilkan riwayat pesanan yang sudah selesai atau dibatalkan.
+     */
+    public function riwayat()
+    {
+        $sopirId = $this->getSopirId();
+
+        return view('sopir.pesanan.riwayat', [
+            'pesanan' => $this->riwayatPesananUntukSopir($sopirId),
+        ]);
+    }
+
+    /**
      * Konfirmasi pesanan yang belum memiliki sopir atau memang milik sopir saat ini.
      */
     public function konfirmasi(Pesanan $pesanan)
@@ -88,13 +100,27 @@ class SopirController extends Controller
             abort(403);
         }
 
-        if ($pesanan->status !== 'selesai') {
-            return back()->withErrors(['pesanan' => 'Pesanan hanya bisa dihapus setelah selesai.']);
+        if (!in_array($pesanan->status, ['selesai', 'dibatalkan'])) {
+            return back()->withErrors(['pesanan' => 'Pesanan hanya bisa dihapus setelah selesai atau dibatalkan.']);
         }
 
         $pesanan->delete();
 
         return back()->with('success', 'Pesanan selesai dihapus dari daftar.');
+    }
+
+    /**
+     * Hapus seluruh riwayat pesanan untuk sopir yang sedang login.
+     */
+    public function bersihkanRiwayat()
+    {
+        $sopirId = $this->getSopirId();
+
+        Pesanan::where('sopir_id', $sopirId)
+            ->whereIn('status', ['selesai', 'dibatalkan'])
+            ->delete();
+
+        return back()->with('success', 'Riwayat pesanan berhasil dibersihkan.');
     }
 
     /**
@@ -251,7 +277,7 @@ class SopirController extends Controller
     private function dataSopir(?int $sopirId): array
     {
         return [
-            'pesanan' => $this->pesananUntukSopir($sopirId),
+            'pesanan' => $this->pesananAktifUntukSopir($sopirId),
             'jadwal' => $this->jadwalUntukSopir($sopirId),
         ];
     }
@@ -259,10 +285,23 @@ class SopirController extends Controller
     /**
      * Ambil daftar pesanan yang terkait dengan sopir.
      */
-    private function pesananUntukSopir(?int $sopirId)
+    private function pesananAktifUntukSopir(?int $sopirId)
     {
         return Pesanan::with(['penumpang', 'rute', 'kendaraan', 'jadwal'])
             ->where('sopir_id', $sopirId)
+            ->whereIn('status', ['menunggu', 'dikonfirmasi'])
+            ->latest()
+            ->get();
+    }
+
+    /**
+     * Ambil daftar riwayat pesanan sopir.
+     */
+    private function riwayatPesananUntukSopir(?int $sopirId)
+    {
+        return Pesanan::with(['penumpang', 'rute', 'kendaraan', 'jadwal'])
+            ->where('sopir_id', $sopirId)
+            ->whereIn('status', ['selesai', 'dibatalkan'])
             ->latest()
             ->get();
     }
