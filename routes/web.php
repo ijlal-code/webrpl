@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\RekomendasiKNNController;
 use App\Http\Controllers\SopirController;
@@ -17,6 +18,13 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.su
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/profil', [ProfilController::class, 'show'])->name('profil.show');
+    Route::get('/profil/buat', [ProfilController::class, 'create'])->name('profil.create');
+    Route::post('/profil', [ProfilController::class, 'simpanProfil'])->name('profil.store');
+    Route::get('/profil/edit', [ProfilController::class, 'edit'])->name('profil.edit');
+    Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+    Route::get('/profil/pengguna/{user}', [ProfilController::class, 'showUser'])->name('profil.public');
+
     Route::get('/dashboard', function () {
         $role = auth()->user()->role;
         return match ($role) {

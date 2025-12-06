@@ -26,6 +26,7 @@
             </ul>
             <ul class="navbar-nav ms-auto">
                 @auth
+                    <li class="nav-item"><a class="nav-link" href="{{ route('profil.show') }}">Profil</a></li>
                     <li class="nav-item"><span class="nav-link text-white">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span></li>
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST" class="d-inline">

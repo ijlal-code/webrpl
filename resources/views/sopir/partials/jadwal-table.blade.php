@@ -30,7 +30,7 @@
                         <td>{{ $item->catatan ?? '-' }}</td>
                         <td>
                             <a href="{{ route('sopir.jadwal.edit', $item) }}" class="btn btn-sm btn-outline-secondary mb-2 w-100">Edit</a>
-                            <form method="POST" action="{{ route('sopir.jadwal.update', $item) }}" class="d-flex flex-column gap-2">
+                            <form method="POST" action="{{ route('sopir.jadwal.update', $item) }}" class="d-flex flex-column gap-2 jadwal-status-form" data-pesanan-count="{{ $item->pesanan_count }}">
                                 @csrf
                                 @method('PATCH')
                                 <div class="d-flex gap-2 flex-wrap">
@@ -60,3 +60,22 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('.jadwal-status-form').forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                const statusSelect = form.querySelector('select[name="status"]');
+                const pesananCount = Number(form.dataset.pesananCount || 0);
+
+                if (statusSelect?.value === 'selesai' && pesananCount === 0) {
+                    const konfirmasi = confirm('Jadwal ini belum memiliki pesanan. Menandai selesai akan menghapus jadwal. Lanjutkan?');
+
+                    if (!konfirmasi) {
+                        event.preventDefault();
+                    }
+                }
+            });
+        });
+    </script>
+@endpush
