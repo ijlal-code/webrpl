@@ -82,11 +82,19 @@ class SopirController extends Controller
 
         $pesanan->update(['status' => 'selesai']);
 
-        if ($pesanan->jadwal) {
-            $pesanan->jadwal->update(['status' => 'selesai']);
+        $jadwal = $pesanan->jadwal;
+        $jadwalDihapus = false;
+
+        if ($jadwal) {
+            $jadwal->update(['status' => 'selesai']);
+            $jadwalDihapus = $this->hapusJadwalJikaSelesai($jadwal);
         }
 
-        return back()->with('success', 'Pesanan telah ditandai selesai.');
+        $pesan = $jadwalDihapus
+            ? 'Pesanan selesai dan jadwal terkait dihapus dari daftar.'
+            : 'Pesanan telah ditandai selesai.';
+
+        return back()->with('success', $pesan);
     }
 
     /**
@@ -224,6 +232,10 @@ class SopirController extends Controller
 
                 return redirect()->route('sopir.jadwal.index')->with('success', 'Jadwal tanpa pesanan dihapus.');
             }
+
+            if ($this->hapusJadwalJikaSelesai($jadwal)) {
+                return redirect()->route('sopir.jadwal.index')->with('success', 'Jadwal selesai dihapus setelah pesanan tuntas.');
+            }
         }
 
         $jadwal->status = $data['status'];
@@ -346,5 +358,21 @@ class SopirController extends Controller
     private function getSopirId(): ?int
     {
         return auth()->user()->sopir->id ?? null;
+    }
+
+    /**
+     * Hapus jadwal jika tidak ada pesanan aktif yang masih menunggu atau dikonfirmasi.
+     */
+    private function hapusJadwalJikaSelesai(JadwalSopir $jadwal): bool
+    {
+        $masihAktif = $jadwal->pesanan()->whereIn('status', ['menunggu', 'dikonfirmasi'])->exists();
+
+        if ($masihAktif) {
+            return false;
+        }
+
+        $jadwal->delete();
+
+        return true;
     }
 }
