@@ -17,7 +17,9 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('sopir.pesanan.index') }}">Pesanan</a></li>
                     @else
                         <li class="nav-item"><a class="nav-link" href="{{ route('penumpang.dashboard') }}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('penumpang.jadwal') }}">Jadwal Sopir</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('penumpang.pesanan') }}">Pesanan</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('penumpang.riwayat') }}">Riwayat</a></li>
                     @endif
                 @endauth
             </ul>
