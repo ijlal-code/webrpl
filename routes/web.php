@@ -43,9 +43,11 @@ Route::middleware(['auth', 'sopir'])->group(function () {
     Route::get('/sopir', [SopirController::class, 'dashboard'])->name('sopir.dashboard');
     Route::get('/sopir/jadwal', [SopirController::class, 'jadwal'])->name('sopir.jadwal.index');
     Route::get('/sopir/pesanan', [SopirController::class, 'pesanan'])->name('sopir.pesanan.index');
+    Route::get('/sopir/pesanan/riwayat', [SopirController::class, 'riwayat'])->name('sopir.pesanan.riwayat');
     Route::post('/sopir/pesanan/{pesanan}/konfirmasi', [SopirController::class, 'konfirmasi'])->name('sopir.pesanan.konfirmasi');
     Route::post('/sopir/pesanan/{pesanan}/selesai', [SopirController::class, 'selesaikan'])->name('sopir.pesanan.selesai');
     Route::delete('/sopir/pesanan/{pesanan}', [SopirController::class, 'hapusPesanan'])->name('sopir.pesanan.hapus');
+    Route::delete('/sopir/pesanan/riwayat/hapus-semua', [SopirController::class, 'bersihkanRiwayat'])->name('sopir.pesanan.riwayat.bersihkan');
     Route::post('/sopir/jadwal', [SopirController::class, 'simpanJadwal'])->name('sopir.jadwal.store');
     Route::get('/sopir/jadwal/{jadwal}/edit', [SopirController::class, 'editJadwal'])->name('sopir.jadwal.edit');
     Route::patch('/sopir/jadwal/{jadwal}', [SopirController::class, 'perbaruiJadwal'])->name('sopir.jadwal.update');
@@ -60,4 +62,5 @@ Route::middleware(['auth', 'penumpang'])->group(function () {
     Route::post('/penumpang/pesanan/{pesanan}/batal', [UserController::class, 'batalkanPesanan'])->name('penumpang.pesanan.batalkan');
     Route::get('/penumpang/riwayat', [UserController::class, 'riwayat'])->name('penumpang.riwayat');
     Route::delete('/penumpang/riwayat/{pesanan}', [UserController::class, 'hapusRiwayat'])->name('penumpang.riwayat.hapus');
+    Route::delete('/penumpang/riwayat', [UserController::class, 'bersihkanRiwayat'])->name('penumpang.riwayat.bersihkan');
 });

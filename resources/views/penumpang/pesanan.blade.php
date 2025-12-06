@@ -36,12 +36,35 @@
                     </thead>
                     <tbody>
                     @forelse($pesanan as $item)
+                        @php
+                            $statusMapping = [
+                                'menunggu' => ['label' => 'Menunggu', 'badge' => 'warning'],
+                                'aktif' => ['label' => 'Aktif', 'badge' => 'success'],
+                                'sedang_jalan' => ['label' => 'Sedang jalan', 'badge' => 'info'],
+                                'tidak_aktif' => ['label' => 'Tidak aktif', 'badge' => 'secondary'],
+                                'dikonfirmasi' => ['label' => 'Dikonfirmasi', 'badge' => 'primary'],
+                            ];
+
+                            $statusSopir = $item->jadwal->status ?? 'dikonfirmasi';
+                            $statusUntukTampilan = $item->status === 'dikonfirmasi' ? $statusSopir : $item->status;
+                            $badge = $statusMapping[$statusUntukTampilan]['badge'] ?? 'secondary';
+                            $label = $statusMapping[$statusUntukTampilan]['label'] ?? str_replace('_', ' ', $statusUntukTampilan);
+                        @endphp
                         <tr>
                             <td>{{ $item->rute->nama_rute ?? '-' }}</td>
                             <td>{{ $item->tanggal_keberangkatan }} {{ $item->jam_keberangkatan }}</td>
                             <td>{{ $item->sopir->nama ?? $item->jadwal->sopir->nama ?? '-' }}</td>
                             <td>{{ $item->catatan ?? '-' }}</td>
-                            <td><span class="badge text-bg-primary text-capitalize">{{ str_replace('_', ' ', $item->status) }}</span></td>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    <span class="badge text-bg-{{ $badge }} text-capitalize">{{ $label }}</span>
+                                    @if($item->status === 'dikonfirmasi')
+                                        <small class="text-muted">Status sopir terkini</small>
+                                    @else
+                                        <small class="text-muted">Menunggu konfirmasi</small>
+                                    @endif
+                                </div>
+                            </td>
                             <td>
                                 <form method="POST" action="{{ route('penumpang.pesanan.batalkan', $item) }}" class="d-flex flex-column gap-2">
                                     @csrf

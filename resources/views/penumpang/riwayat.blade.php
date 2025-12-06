@@ -29,7 +29,16 @@
     @endphp
 
     <div class="card">
-        <div class="card-header">Daftar Riwayat</div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Daftar Riwayat</span>
+            @if($pesanan->isNotEmpty())
+                <form method="POST" action="{{ route('penumpang.riwayat.bersihkan') }}" onsubmit="return confirm('Hapus semua riwayat pesanan?');">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Bersihkan Riwayat</button>
+                </form>
+            @endif
+        </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-striped mb-0">
