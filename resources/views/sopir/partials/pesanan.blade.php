@@ -25,7 +25,13 @@
                 <tbody>
                 @forelse($pesanan as $item)
                     <tr>
-                        <td>{{ $item->penumpang->name ?? '-' }}</td>
+                        <td>
+                            @if($item->penumpang)
+                                <a href="{{ route('profil.public', $item->penumpang) }}" class="text-decoration-none">{{ $item->penumpang->name }}</a>
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ $item->rute->nama_rute ?? '-' }}</td>
                         <td>{{ $item->tanggal_keberangkatan }} {{ $item->jam_keberangkatan }}</td>
                         <td>{{ $item->catatan ?? '-' }}</td>

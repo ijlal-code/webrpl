@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProfilController extends Controller
@@ -71,5 +72,17 @@ class ProfilController extends Controller
         ]);
 
         return redirect()->route('profil.show')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    /**
+     * Tampilkan profil publik pengguna lain agar sopir dan penumpang bisa saling mengenal.
+     */
+    public function showUser(User $user)
+    {
+        $user->load('profil');
+
+        return view('profil.public', [
+            'profilUser' => $user,
+        ]);
     }
 }

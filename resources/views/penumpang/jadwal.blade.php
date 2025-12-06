@@ -61,7 +61,13 @@
                     @forelse($jadwal as $item)
                         @php $badge = $badgeClass[$item->status] ?? 'secondary'; @endphp
                         <tr>
-                            <td>{{ $item->sopir->nama ?? $item->sopir->user->name ?? '-' }}</td>
+                            <td>
+                                @if($item->sopir && $item->sopir->user)
+                                    <a href="{{ route('profil.public', $item->sopir->user) }}" class="text-decoration-none">{{ $item->sopir->nama ?? $item->sopir->user->name }}</a>
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>{{ $item->rute->nama_rute ?? '-' }}</td>
                             <td>{{ $item->tanggal_keberangkatan }} {{ $item->jam_keberangkatan }}</td>
                             <td>{{ $item->catatan ?? '-' }}</td>

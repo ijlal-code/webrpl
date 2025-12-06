@@ -208,11 +208,29 @@ class SopirController extends Controller
             $jadwal->jam_keberangkatan = $data['jam_keberangkatan'];
         }
 
+        $pesan = 'Jadwal diperbarui.';
+
+        if ($data['status'] === 'selesai') {
+            $pesananDikonfirmasi = $jadwal->pesanan()->where('status', 'dikonfirmasi')->get();
+
+            if ($pesananDikonfirmasi->isNotEmpty()) {
+                foreach ($pesananDikonfirmasi as $pesanan) {
+                    $pesanan->update(['status' => 'selesai']);
+                }
+
+                $pesan = 'Jadwal dan pesanan terkonfirmasi ditandai selesai.';
+            } elseif (!$jadwal->pesanan()->exists()) {
+                $jadwal->delete();
+
+                return redirect()->route('sopir.jadwal.index')->with('success', 'Jadwal tanpa pesanan dihapus.');
+            }
+        }
+
         $jadwal->status = $data['status'];
         $jadwal->catatan = $data['catatan'] ?? null;
         $jadwal->save();
 
-        return redirect()->route('sopir.jadwal.index')->with('success', 'Jadwal diperbarui.');
+        return redirect()->route('sopir.jadwal.index')->with('success', $pesan);
     }
 
     /**
@@ -287,7 +305,7 @@ class SopirController extends Controller
      */
     private function pesananAktifUntukSopir(?int $sopirId)
     {
-        return Pesanan::with(['penumpang', 'rute', 'kendaraan', 'jadwal'])
+        return Pesanan::with(['penumpang.profil', 'rute', 'kendaraan', 'jadwal'])
             ->where('sopir_id', $sopirId)
             ->whereIn('status', ['menunggu', 'dikonfirmasi'])
             ->latest()
@@ -312,6 +330,10 @@ class SopirController extends Controller
     private function jadwalUntukSopir(?int $sopirId)
     {
         return JadwalSopir::with('rute')
+            ->withCount([
+                'pesanan',
+                'pesanan as pesanan_dikonfirmasi_count' => fn($q) => $q->where('status', 'dikonfirmasi'),
+            ])
             ->where('sopir_id', $sopirId)
             ->orderByDesc('tanggal_keberangkatan')
             ->orderByDesc('jam_keberangkatan')
