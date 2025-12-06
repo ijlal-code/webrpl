@@ -39,9 +39,9 @@
                         @php
                             $statusMapping = [
                                 'menunggu' => ['label' => 'Menunggu', 'badge' => 'warning'],
-                                'aktif' => ['label' => 'Aktif', 'badge' => 'success'],
-                                'sedang_jalan' => ['label' => 'Sedang jalan', 'badge' => 'info'],
-                                'tidak_aktif' => ['label' => 'Tidak aktif', 'badge' => 'secondary'],
+                                'siap_berangkat' => ['label' => 'Siap berangkat', 'badge' => 'success'],
+                                'dalam_perjalanan' => ['label' => 'Dalam perjalanan', 'badge' => 'warning'],
+                                'selesai' => ['label' => 'Selesai', 'badge' => 'secondary'],
                                 'dikonfirmasi' => ['label' => 'Dikonfirmasi', 'badge' => 'primary'],
                             ];
 

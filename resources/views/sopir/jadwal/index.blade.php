@@ -19,6 +19,6 @@
         </div>
     @endif
 
-    @include('sopir.partials.jadwal')
+    @include('sopir.partials.jadwal-table')
 </div>
 @endsection
