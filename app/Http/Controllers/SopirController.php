@@ -9,13 +9,20 @@ use Illuminate\Http\Request;
 
 class SopirController extends Controller
 {
+    /**
+     * Tampilkan dashboard untuk sopir dengan pesanan dan jadwal terbaru.
+     */
     public function dashboard()
     {
         $sopirId = $this->getSopirId();
 
-        return view('dashboard.sopir', $this->dataSopir($sopirId));
+        // Halaman dashboard dipindahkan agar berada di folder sopir untuk kejelasan struktur.
+        return view('sopir.dashboard', $this->dataSopir($sopirId));
     }
 
+    /**
+     * Tampilkan daftar jadwal milik sopir yang sedang login.
+     */
     public function jadwal()
     {
         $sopirId = $this->getSopirId();
@@ -23,6 +30,9 @@ class SopirController extends Controller
         return view('sopir.jadwal.index', $this->dataSopir($sopirId));
     }
 
+    /**
+     * Tampilkan pesanan yang perlu ditangani sopir.
+     */
     public function pesanan()
     {
         $sopirId = $this->getSopirId();
@@ -30,10 +40,14 @@ class SopirController extends Controller
         return view('sopir.pesanan.index', $this->dataSopir($sopirId));
     }
 
+    /**
+     * Konfirmasi pesanan yang belum memiliki sopir atau memang milik sopir saat ini.
+     */
     public function konfirmasi(Pesanan $pesanan)
     {
         $sopirId = $this->getSopirId();
 
+        // Cegah sopir lain mengambil alih pesanan.
         if ($pesanan->sopir_id && $pesanan->sopir_id !== $sopirId) {
             abort(403);
         }
@@ -43,6 +57,9 @@ class SopirController extends Controller
         return back()->with('success', 'Pesanan berhasil dikonfirmasi.');
     }
 
+    /**
+     * Tandai pesanan telah selesai oleh sopir yang sesuai.
+     */
     public function selesaikan(Pesanan $pesanan)
     {
         $sopirId = $this->getSopirId();
@@ -56,6 +73,9 @@ class SopirController extends Controller
         return back()->with('success', 'Pesanan telah ditandai selesai.');
     }
 
+    /**
+     * Form untuk mengedit jadwal sopir tertentu.
+     */
     public function editJadwal(JadwalSopir $jadwal)
     {
         $sopirId = $this->getSopirId();
@@ -69,6 +89,9 @@ class SopirController extends Controller
         ]);
     }
 
+    /**
+     * Simpan jadwal baru yang diajukan sopir.
+     */
     public function simpanJadwal(Request $request)
     {
         $data = $request->validate([
@@ -82,6 +105,7 @@ class SopirController extends Controller
 
         $sopirId = $this->getSopirId();
 
+        // Tidak boleh membuat jadwal tanpa profil sopir yang valid.
         if (!$sopirId) {
             return back()->withErrors(['jadwal' => 'Sopir tidak ditemukan.']);
         }
@@ -100,6 +124,9 @@ class SopirController extends Controller
         return back()->with('success', 'Jadwal keberangkatan tersimpan.');
     }
 
+    /**
+     * Perbarui jadwal yang sudah ada milik sopir saat ini.
+     */
     public function perbaruiJadwal(JadwalSopir $jadwal, Request $request)
     {
         $data = $request->validate([
@@ -117,6 +144,7 @@ class SopirController extends Controller
             abort(403);
         }
 
+        // Perbarui rute hanya jika input baru diberikan.
         if (isset($data['rute_pilihan'])) {
             $rute = $this->resolveRute($data['rute_pilihan'], $data['custom_rute'] ?? null);
             $jadwal->rute_id = $rute->id;
@@ -137,6 +165,9 @@ class SopirController extends Controller
         return redirect()->route('sopir.jadwal.index')->with('success', 'Jadwal diperbarui.');
     }
 
+    /**
+     * Hapus jadwal sopir yang dipilih.
+     */
     public function hapusJadwal(JadwalSopir $jadwal)
     {
         $sopirId = $this->getSopirId();
@@ -150,6 +181,9 @@ class SopirController extends Controller
         return back()->with('success', 'Jadwal berhasil dihapus.');
     }
 
+    /**
+     * Tentukan rute berdasarkan pilihan preset atau input khusus.
+     */
     private function resolveRute(string $pilihan, ?string $customRute): Rute
     {
         return match ($pilihan) {
@@ -165,6 +199,9 @@ class SopirController extends Controller
         };
     }
 
+    /**
+     * Buat entri rute baru berdasarkan input bebas pengguna.
+     */
     private function buatRuteCustom(?string $input): Rute
     {
         $input = trim($input ?? '');
@@ -184,6 +221,9 @@ class SopirController extends Controller
         );
     }
 
+    /**
+     * Kumpulan data yang berulang untuk setiap tampilan sopir.
+     */
     private function dataSopir(?int $sopirId): array
     {
         return [
@@ -192,6 +232,9 @@ class SopirController extends Controller
         ];
     }
 
+    /**
+     * Ambil daftar pesanan yang terkait dengan sopir.
+     */
     private function pesananUntukSopir(?int $sopirId)
     {
         return Pesanan::with(['penumpang', 'rute', 'kendaraan', 'jadwal'])
@@ -200,6 +243,9 @@ class SopirController extends Controller
             ->get();
     }
 
+    /**
+     * Ambil semua jadwal yang dimiliki sopir terurut dari yang terbaru.
+     */
     private function jadwalUntukSopir(?int $sopirId)
     {
         return JadwalSopir::with('rute')
@@ -209,6 +255,9 @@ class SopirController extends Controller
             ->get();
     }
 
+    /**
+     * Ambil ID sopir dari user yang sedang login.
+     */
     private function getSopirId(): ?int
     {
         return auth()->user()->sopir->id ?? null;

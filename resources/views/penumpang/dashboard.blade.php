@@ -19,6 +19,7 @@
         </div>
     @endif
 
+    {{-- Kolom kiri memuat rekomendasi otomatis, kanan berisi ringkasan status sopir --}}
     <div class="row g-3 mb-4">
         <div class="col-lg-6">
             <div class="card h-100">
@@ -90,6 +91,7 @@
         </div>
     </div>
 
+    {{-- Tabel utama semua jadwal yang dapat dipilih penumpang --}}
     <div class="card mb-4">
         <div class="card-header">Semua Jadwal Sopir</div>
         <div class="card-body p-0">
@@ -151,6 +153,7 @@
         ];
     @endphp
 
+    {{-- Riwayat lengkap pesanan pengguna --}}
     <div class="card">
         <div class="card-header">Riwayat Pesanan</div>
         <div class="card-body p-0">
