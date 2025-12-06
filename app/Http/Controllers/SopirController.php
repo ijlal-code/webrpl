@@ -70,7 +70,31 @@ class SopirController extends Controller
 
         $pesanan->update(['status' => 'selesai']);
 
+        if ($pesanan->jadwal) {
+            $pesanan->jadwal->update(['status' => 'tidak_aktif']);
+        }
+
         return back()->with('success', 'Pesanan telah ditandai selesai.');
+    }
+
+    /**
+     * Hapus pesanan yang sudah selesai agar daftar sopir lebih ringkas.
+     */
+    public function hapusPesanan(Pesanan $pesanan)
+    {
+        $sopirId = $this->getSopirId();
+
+        if ($pesanan->sopir_id !== $sopirId) {
+            abort(403);
+        }
+
+        if ($pesanan->status !== 'selesai') {
+            return back()->withErrors(['pesanan' => 'Pesanan hanya bisa dihapus setelah selesai.']);
+        }
+
+        $pesanan->delete();
+
+        return back()->with('success', 'Pesanan selesai dihapus dari daftar.');
     }
 
     /**

@@ -41,6 +41,12 @@
                                     @csrf
                                     <button class="btn btn-sm btn-outline-primary">Tandai Selesai</button>
                                 </form>
+                            @elseif($item->status === 'selesai')
+                                <form method="POST" action="{{ route('sopir.pesanan.hapus', $item) }}" class="d-inline" onsubmit="return confirm('Hapus pesanan selesai ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger">Hapus</button>
+                                </form>
                             @else
                                 <span class="text-muted">Tidak ada aksi</span>
                             @endif

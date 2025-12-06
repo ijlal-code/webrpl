@@ -30,10 +30,6 @@ class UserController extends Controller
             'jadwal' => $jadwal,
             'rekomendasi' => $rekomendasi,
             'pesananPerJadwal' => $pesananPerJadwal,
-            'pesanan' => Pesanan::with(['rute', 'jadwal.sopir.user'])
-                ->where('user_id', auth()->id())
-                ->latest()
-                ->get(),
         ]);
     }
 
@@ -81,10 +77,14 @@ class UserController extends Controller
      */
     public function pesanan()
     {
-        return view('pesanan.index', [
-            'pesanan' => Pesanan::with(['rute', 'kendaraan', 'sopir', 'jadwal'])
-                ->where('user_id', auth()->id())
-                ->get(),
+        $pesanan = Pesanan::with(['rute', 'kendaraan', 'sopir', 'jadwal'])
+            ->where('user_id', auth()->id())
+            ->whereIn('status', ['menunggu', 'dikonfirmasi'])
+            ->latest()
+            ->get();
+
+        return view('penumpang.pesanan', [
+            'pesanan' => $pesanan,
         ]);
     }
 
@@ -119,6 +119,80 @@ class UserController extends Controller
         ]);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+
+    /**
+     * Semua jadwal sopir yang bisa dipesan dengan pencarian.
+     */
+    public function jadwal(Request $request)
+    {
+        $search = trim($request->get('q', ''));
+
+        $jadwal = JadwalSopir::with(['sopir.user', 'rute'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->whereHas('rute', function ($ruteQuery) use ($search) {
+                        $ruteQuery->where('nama_rute', 'like', "%{$search}%")
+                            ->orWhere('asal', 'like', "%{$search}%")
+                            ->orWhere('tujuan', 'like', "%{$search}%");
+                    })
+                        ->orWhereHas('sopir', function ($sopirQuery) use ($search) {
+                            $sopirQuery->where('nama', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('sopir.user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhere('tanggal_keberangkatan', 'like', "%{$search}%")
+                        ->orWhere('jam_keberangkatan', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('tanggal_keberangkatan')
+            ->orderBy('jam_keberangkatan')
+            ->get();
+
+        $pesananPerJadwal = Pesanan::where('user_id', auth()->id())
+            ->get()
+            ->keyBy('jadwal_id');
+
+        return view('penumpang.jadwal', [
+            'jadwal' => $jadwal,
+            'pesananPerJadwal' => $pesananPerJadwal,
+            'search' => $search,
+        ]);
+    }
+
+    /**
+     * Riwayat pesanan penumpang yang telah selesai atau dibatalkan.
+     */
+    public function riwayat()
+    {
+        $pesanan = Pesanan::with(['rute', 'kendaraan', 'sopir', 'jadwal'])
+            ->where('user_id', auth()->id())
+            ->whereIn('status', ['selesai', 'dibatalkan'])
+            ->latest()
+            ->get();
+
+        return view('penumpang.riwayat', [
+            'pesanan' => $pesanan,
+        ]);
+    }
+
+    /**
+     * Hapus entri riwayat yang tidak lagi ingin ditampilkan pengguna.
+     */
+    public function hapusRiwayat(Pesanan $pesanan)
+    {
+        if ($pesanan->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if (!in_array($pesanan->status, ['selesai', 'dibatalkan'])) {
+            return back()->withErrors(['pesanan' => 'Riwayat hanya bisa dihapus ketika status selesai atau dibatalkan.']);
+        }
+
+        $pesanan->delete();
+
+        return back()->with('success', 'Riwayat pesanan dihapus.');
     }
 
     /**

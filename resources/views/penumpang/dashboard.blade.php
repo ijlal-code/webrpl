@@ -91,101 +91,31 @@
         </div>
     </div>
 
-    {{-- Tabel utama semua jadwal yang dapat dipilih penumpang --}}
-    <div class="card mb-4">
-        <div class="card-header">Semua Jadwal Sopir</div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-striped mb-0">
-                    <thead>
-                    <tr>
-                        <th>Sopir</th>
-                        <th>Rute</th>
-                        <th>Waktu Berangkat</th>
-                        <th>Catatan Sopir</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($jadwal as $item)
-                        @php
-                            $badge = $badgeClass[$item->status] ?? 'secondary';
-                        @endphp
-                        <tr>
-                            <td>{{ $item->sopir->nama ?? $item->sopir->user->name ?? '-' }}</td>
-                            <td>{{ $item->rute->nama_rute ?? '-' }}</td>
-                            <td>{{ $item->tanggal_keberangkatan }} {{ $item->jam_keberangkatan }}</td>
-                            <td>{{ $item->catatan ?? '-' }}</td>
-                            <td><span class="badge text-bg-{{ $badge }} text-capitalize">{{ str_replace('_', ' ', $item->status) }}</span></td>
-                            <td>
-                                @if($pesananPerJadwal->has($item->id))
-                                    <span class="badge text-bg-success">Sudah dipesan</span>
-                                @elseif($item->status === 'aktif')
-                                    <form method="POST" action="{{ route('penumpang.pesan') }}" class="d-flex gap-2">
-                                        @csrf
-                                        <input type="hidden" name="jadwal_id" value="{{ $item->id }}">
-                                        <input type="text" name="catatan" class="form-control form-control-sm" placeholder="Catatan">
-                                        <button class="btn btn-sm btn-outline-primary" type="submit">Pesan</button>
-                                    </form>
-                                @else
-                                    <span class="text-muted">Tidak tersedia</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-4">Belum ada jadwal sopir yang terdaftar.</td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    @php
-        $statusBadgePesanan = [
-            'menunggu' => 'warning',
-            'dikonfirmasi' => 'primary',
-            'selesai' => 'success',
-            'dibatalkan' => 'secondary',
-        ];
-    @endphp
-
-    {{-- Riwayat lengkap pesanan pengguna --}}
     <div class="card">
-        <div class="card-header">Riwayat Pesanan</div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-striped mb-0">
-                    <thead>
-                    <tr>
-                        <th>Rute</th>
-                        <th>Sopir</th>
-                        <th>Jadwal</th>
-                        <th>Catatan Sopir</th>
-                        <th>Catatan Anda</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($pesanan as $item)
-                        <tr>
-                            <td>{{ $item->rute->nama_rute ?? '-' }}</td>
-                            <td>{{ $item->jadwal->sopir->nama ?? $item->sopir->nama ?? '-' }}</td>
-                            <td>{{ $item->tanggal_keberangkatan }} {{ $item->jam_keberangkatan }}</td>
-                            <td>{{ $item->jadwal->catatan ?? '-' }}</td>
-                            <td>{{ $item->catatan ?? '-' }}</td>
-                            <td><span class="badge text-bg-{{ $statusBadgePesanan[$item->status] ?? 'secondary' }} text-capitalize">{{ str_replace('_', ' ', $item->status) }}</span></td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center py-4">Belum ada pesanan yang tercatat.</td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card-header">Aksi Cepat</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <h5>Jadwal Sopir</h5>
+                        <p class="text-muted">Lihat semua jadwal sopir dan lakukan pemesanan dengan pencarian cepat.</p>
+                        <a href="{{ route('penumpang.jadwal') }}" class="btn btn-outline-primary w-100">Lihat Jadwal</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <h5>Pesanan Aktif</h5>
+                        <p class="text-muted">Pantau pesanan yang masih menunggu atau sudah dikonfirmasi.</p>
+                        <a href="{{ route('penumpang.pesanan') }}" class="btn btn-outline-primary w-100">Buka Pesanan</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded p-3 h-100">
+                        <h5>Riwayat Pesanan</h5>
+                        <p class="text-muted">Tinjau pesanan yang telah selesai atau dibatalkan, dan kelola riwayat Anda.</p>
+                        <a href="{{ route('penumpang.riwayat') }}" class="btn btn-outline-primary w-100">Lihat Riwayat</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
