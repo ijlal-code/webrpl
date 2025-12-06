@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Sopir;
+use App\Models\Profil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -40,6 +41,14 @@ class AuthController extends Controller
             'role' => $data['role'],
             'phone' => $data['telepon'] ?? $data['phone'] ?? null,
         ]);
+
+        $profilData = [
+            'alamat' => $data['alamat'] ?? '-',
+            'nomor_hp' => $data['telepon'] ?? $data['phone'] ?? '-',
+            'jabatan' => $data['role'] === 'sopir' ? 'Sopir' : 'Penumpang',
+        ];
+
+        $user->profil()->create($profilData);
 
         if ($user->role === 'sopir') {
             Sopir::create([
