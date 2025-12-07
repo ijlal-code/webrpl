@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\JadwalSopir;
 use App\Models\Pesanan;
 use App\Models\User;
+use App\Models\Rute;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -58,5 +60,68 @@ class AdminController extends Controller
             'diagrams' => $diagrams,
             'jadwalTerbaru' => JadwalSopir::with(['sopir.user', 'rute'])->latest()->take(5)->get(),
         ]);
+    }
+
+    /**
+     * Tampilkan daftar pesanan dengan pencarian ringan dan aksi hapus.
+     */
+    public function pesanan(Request $request)
+    {
+        $keyword = $request->query('q');
+
+        $pesanan = Pesanan::with(['penumpang', 'sopir', 'rute', 'jadwal'])
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->where(function ($sub) use ($keyword) {
+                    $sub->whereHas('penumpang', fn($q) => $q->where('name', 'like', "%{$keyword}%"))
+                        ->orWhereHas('sopir', fn($q) => $q->where('nama', 'like', "%{$keyword}%"))
+                        ->orWhereHas('rute', fn($q) => $q->where('nama_rute', 'like', "%{$keyword}%"));
+                });
+            })
+            ->latest()
+            ->get();
+
+        return view('pesanan.index', [
+            'pesanan' => $pesanan,
+            'keyword' => $keyword,
+        ]);
+    }
+
+    /**
+     * Kelola rute yang dibuat sopir.
+     */
+    public function rute()
+    {
+        return view('admin.rute', [
+            'rute' => Rute::withCount(['jadwal', 'pesanans'])->latest()->get(),
+        ]);
+    }
+
+    public function hapusRute(Rute $rute)
+    {
+        $rute->delete();
+
+        return back()->with('success', 'Rute berhasil dihapus.');
+    }
+
+    /**
+     * Kelola profil pengguna penumpang dan sopir.
+     */
+    public function pengguna()
+    {
+        return view('admin.pengguna', [
+            'penumpang' => User::with('profil')->where('role', 'penumpang')->get(),
+            'sopir' => User::with(['profil', 'sopir'])->where('role', 'sopir')->get(),
+        ]);
+    }
+
+    public function hapusPengguna(User $user)
+    {
+        if ($user->role === 'admin') {
+            abort(403);
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'Akun pengguna berhasil dihapus.');
     }
 }

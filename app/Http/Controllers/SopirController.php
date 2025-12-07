@@ -88,6 +88,34 @@ class SopirController extends Controller
     }
 
     /**
+     * Tandai seluruh pesanan dikonfirmasi sebagai selesai agar sopir dapat menutup semua perjalanan sekaligus.
+     */
+    public function selesaikanSemua()
+    {
+        $sopirId = $this->getSopirId();
+
+        $pesanan = Pesanan::with('jadwal')
+            ->where('sopir_id', $sopirId)
+            ->where('status', 'dikonfirmasi')
+            ->get();
+
+        if ($pesanan->isEmpty()) {
+            return back()->withErrors(['pesanan' => 'Tidak ada pesanan yang siap ditandai selesai.']);
+        }
+
+        foreach ($pesanan as $item) {
+            $item->update(['status' => 'selesai']);
+
+            if ($item->jadwal) {
+                $item->jadwal->update(['status' => 'selesai']);
+                $this->hapusJadwalJikaSelesai($item->jadwal);
+            }
+        }
+
+        return back()->with('success', 'Semua pesanan terkonfirmasi berhasil ditandai selesai.');
+    }
+
+    /**
      * Tandai pesanan telah selesai oleh sopir yang sesuai.
      */
     public function selesaikan(Pesanan $pesanan)

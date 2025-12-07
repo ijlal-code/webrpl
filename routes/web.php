@@ -19,8 +19,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfilController::class, 'show'])->name('profil.show');
-    Route::get('/profil/buat', [ProfilController::class, 'create'])->name('profil.create');
-    Route::post('/profil', [ProfilController::class, 'simpanProfil'])->name('profil.store');
     Route::get('/profil/edit', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
     Route::get('/profil/pengguna/{user}', [ProfilController::class, 'showUser'])->name('profil.public');
@@ -41,10 +39,13 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/laporan', [AdminController::class, 'laporan'])->name('admin.laporan');
+    Route::get('/admin/rute', [AdminController::class, 'rute'])->name('admin.rute');
+    Route::delete('/admin/rute/{rute}', [AdminController::class, 'hapusRute'])->name('admin.rute.hapus');
+    Route::get('/admin/pengguna', [AdminController::class, 'pengguna'])->name('admin.pengguna');
+    Route::delete('/admin/pengguna/{user}', [AdminController::class, 'hapusPengguna'])->name('admin.pengguna.hapus');
 
-    Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
-    Route::post('/pesanan', [PesananController::class, 'store'])->name('pesanan.store');
-    Route::post('/pesanan/{pesanan}/status', [PesananController::class, 'updateStatus'])->name('pesanan.status');
+    Route::get('/pesanan', [AdminController::class, 'pesanan'])->name('pesanan.index');
+    Route::delete('/pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
 });
 
 Route::middleware(['auth', 'sopir'])->group(function () {
@@ -53,6 +54,7 @@ Route::middleware(['auth', 'sopir'])->group(function () {
     Route::get('/sopir/pesanan', [SopirController::class, 'pesanan'])->name('sopir.pesanan.index');
     Route::get('/sopir/pesanan/riwayat', [SopirController::class, 'riwayat'])->name('sopir.pesanan.riwayat');
     Route::post('/sopir/pesanan/konfirmasi-semua', [SopirController::class, 'konfirmasiSemua'])->name('sopir.pesanan.konfirmasi.semua');
+    Route::post('/sopir/pesanan/selesai-semua', [SopirController::class, 'selesaikanSemua'])->name('sopir.pesanan.selesai.semua');
     Route::post('/sopir/pesanan/{pesanan}/konfirmasi', [SopirController::class, 'konfirmasi'])->name('sopir.pesanan.konfirmasi');
     Route::post('/sopir/pesanan/{pesanan}/selesai', [SopirController::class, 'selesaikan'])->name('sopir.pesanan.selesai');
     Route::delete('/sopir/pesanan/{pesanan}', [SopirController::class, 'hapusPesanan'])->name('sopir.pesanan.hapus');
