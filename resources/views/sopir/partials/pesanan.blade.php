@@ -8,18 +8,28 @@
 @endphp
 
 <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center gap-3">
+    <div class="card-header d-flex justify-content-between align-items-center gap-3 flex-wrap">
         <div>
             <div class="fw-semibold">Pesanan Masuk</div>
             <small class="text-muted">Kelola pesanan penumpang yang terkait dengan jadwal Anda.</small>
         </div>
-        @php $totalMenunggu = $pesanan->where('status', 'menunggu')->count(); @endphp
-        <div class="d-flex align-items-center gap-2">
+        @php
+            $totalMenunggu = $pesanan->where('status', 'menunggu')->count();
+            $totalDikonfirmasi = $pesanan->where('status', 'dikonfirmasi')->count();
+        @endphp
+        <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
             <span class="badge text-bg-warning text-uppercase">Menunggu: {{ $totalMenunggu }}</span>
+            <span class="badge text-bg-primary text-uppercase">Dikonfirmasi: {{ $totalDikonfirmasi }}</span>
             @if($totalMenunggu > 0)
                 <form method="POST" action="{{ route('sopir.pesanan.konfirmasi.semua') }}" onsubmit="return confirm('Konfirmasi semua pesanan menunggu?');">
                     @csrf
                     <button class="btn btn-sm btn-success">Konfirmasi Semua</button>
+                </form>
+            @endif
+            @if($totalDikonfirmasi > 0)
+                <form method="POST" action="{{ route('sopir.pesanan.selesai.semua') }}" onsubmit="return confirm('Tandai semua pesanan terkonfirmasi sebagai selesai?');">
+                    @csrf
+                    <button class="btn btn-sm btn-outline-primary">Selesai Semua</button>
                 </form>
             @endif
         </div>

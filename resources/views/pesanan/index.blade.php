@@ -2,7 +2,17 @@
 
 @section('content')
 <div class="container py-4">
-    <h1>Pesanan</h1>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <div>
+            <h1 class="mb-1">Pesanan</h1>
+            <p class="text-muted mb-0">Cari pesanan dan hapus jika diperlukan.</p>
+        </div>
+        <form method="GET" action="{{ route('pesanan.index') }}" class="d-flex gap-2">
+            <input type="search" name="q" value="{{ $keyword ?? '' }}" class="form-control" placeholder="Cari penumpang, sopir, atau rute">
+            <button class="btn btn-outline-primary" type="submit">Cari</button>
+        </form>
+    </div>
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -16,8 +26,6 @@
             </ul>
         </div>
     @endif
-
-    @php $role = auth()->user()->role ?? null; @endphp
 
     <div class="table-responsive shadow-sm rounded-3 bg-white">
         <table class="table table-hover mb-0 align-middle">
@@ -46,36 +54,11 @@
                     <td>{{ ucfirst($item->status) }}</td>
                     <td>{{ $item->alasan_pembatalan ?? '-' }}</td>
                     <td>
-                        @if($role === 'penumpang')
-                            @if(in_array($item->status, ['dibatalkan', 'selesai']))
-                                <span class="text-muted">Tidak ada aksi</span>
-                            @else
-                                <form method="POST" action="{{ route('penumpang.pesanan.batalkan', $item) }}" class="d-flex flex-column gap-2">
-                                    @csrf
-                                    <select name="alasan" class="form-select form-select-sm alasan-select" data-target="#alasan-lain-{{ $item->id }}">
-                                        <option value="perubahan_rencana">Perubahan rencana perjalanan</option>
-                                        <option value="menemukan_transportasi_lain">Menemukan transportasi lain</option>
-                                        <option value="kesalahan_pemesanan">Kesalahan pemesanan</option>
-                                        <option value="lainnya">Alasan lainnya</option>
-                                    </select>
-                                    <input type="text" name="alasan_lain" id="alasan-lain-{{ $item->id }}" class="form-control form-control-sm alasan-lain" placeholder="Tuliskan alasan lain" style="display: none;">
-                                    <button class="btn btn-sm btn-danger" type="submit">Batalkan Pesanan</button>
-                                </form>
-                            @endif
-                        @elseif($role === 'admin')
-                            <form method="POST" action="{{ route('pesanan.status', $item) }}" class="d-flex flex-column flex-lg-row gap-2">
-                                @csrf
-                                <select name="status" class="form-select form-select-sm">
-                                    <option value="menunggu" @selected($item->status === 'menunggu')>Menunggu</option>
-                                    <option value="dikonfirmasi" @selected($item->status === 'dikonfirmasi')>Dikonfirmasi</option>
-                                    <option value="selesai" @selected($item->status === 'selesai')>Selesai</option>
-                                    <option value="dibatalkan" @selected($item->status === 'dibatalkan')>Dibatalkan</option>
-                                </select>
-                                <button class="btn btn-sm btn-primary" type="submit">Simpan</button>
-                            </form>
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
+                        <form method="POST" action="{{ route('pesanan.destroy', $item) }}" onsubmit="return confirm('Hapus pesanan ini?');">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Hapus</button>
+                        </form>
                     </td>
                 </tr>
             @endforeach
@@ -83,20 +66,4 @@
         </table>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.alasan-select').forEach(select => {
-            const target = document.querySelector(select.dataset.target);
-
-            const toggleInput = () => {
-                if (!target) return;
-                target.style.display = select.value === 'lainnya' ? 'block' : 'none';
-            };
-
-            select.addEventListener('change', toggleInput);
-            toggleInput();
-        });
-    });
-</script>
 @endsection

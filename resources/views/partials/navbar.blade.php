@@ -10,6 +10,8 @@
                     @if(auth()->user()->role === 'admin')
                         <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('pesanan.index') }}">Pesanan</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('admin.rute') }}">Rute</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('admin.pengguna') }}">Pengguna</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('admin.laporan') }}">Laporan</a></li>
                     @elseif(auth()->user()->role === 'sopir')
                         <li class="nav-item"><a class="nav-link" href="{{ route('sopir.dashboard') }}">Dashboard</a></li>
@@ -26,7 +28,9 @@
             </ul>
             <ul class="navbar-nav ms-auto">
                 @auth
-                    <li class="nav-item"><a class="nav-link" href="{{ route('profil.show') }}">Profil</a></li>
+                    @if(auth()->user()->role !== 'admin')
+                        <li class="nav-item"><a class="nav-link" href="{{ route('profil.show') }}">Profil</a></li>
+                    @endif
                     <li class="nav-item"><span class="nav-link text-white">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span></li>
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST" class="d-inline">

@@ -66,4 +66,11 @@ class PesananController extends Controller
 
         return back()->with('success', 'Status pesanan diperbarui.');
     }
+
+    public function destroy(Pesanan $pesanan)
+    {
+        $pesanan->delete();
+
+        return back()->with('success', 'Pesanan berhasil dihapus.');
+    }
 }
