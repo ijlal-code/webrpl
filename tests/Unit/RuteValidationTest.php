@@ -46,8 +46,6 @@ class RuteValidationTest extends TestCase
             'nama_rute' => 'Majene - Polman',
             'asal' => 'Majene',
             'tujuan' => 'Polewali Mandar',
-            'jarak_km' => 45.5,
-            'perkiraan_waktu' => '1 Jam 30 Menit'
         ];
 
         // Kirim data
@@ -60,7 +58,6 @@ class RuteValidationTest extends TestCase
         $this->assertDatabaseHas('rutes', [
             'nama_rute' => 'Majene - Polman',
             'asal' => 'Majene',
-            'jarak_km' => 45.5
         ]);
     }
 }

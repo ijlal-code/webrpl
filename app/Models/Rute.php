@@ -13,8 +13,6 @@ class Rute extends Model
         'nama_rute',
         'asal',
         'tujuan',
-        'jarak_km',
-        'perkiraan_waktu',
     ];
 
     public function pesanans()

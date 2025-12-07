@@ -16,9 +16,9 @@ class TransportDataSeeder extends Seeder
     public function run(): void
     {
         $ruteList = collect([
-            ['nama_rute' => 'Majene - Polewali', 'asal' => 'Majene', 'tujuan' => 'Polewali', 'jarak_km' => 120, 'perkiraan_waktu' => '02:30'],
-            ['nama_rute' => 'Polewali - Majene', 'asal' => 'Polewali', 'tujuan' => 'Majene', 'jarak_km' => 120, 'perkiraan_waktu' => '02:30'],
-            ['nama_rute' => 'Mamuju - Majene', 'asal' => 'Mamuju', 'tujuan' => 'Majene', 'jarak_km' => 100, 'perkiraan_waktu' => '02:00'],
+            ['nama_rute' => 'Majene - Polewali', 'asal' => 'Majene', 'tujuan' => 'Polewali'],
+            ['nama_rute' => 'Polewali - Majene', 'asal' => 'Polewali', 'tujuan' => 'Majene'],
+            ['nama_rute' => 'Mamuju - Majene', 'asal' => 'Mamuju', 'tujuan' => 'Majene'],
         ])->map(fn (array $data) => Rute::firstOrCreate(['nama_rute' => $data['nama_rute']], $data));
 
         if ($ruteList->isEmpty()) {
