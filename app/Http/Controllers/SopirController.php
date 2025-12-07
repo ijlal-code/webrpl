@@ -335,7 +335,7 @@ class SopirController extends Controller
      */
     private function pesananAktifUntukSopir(?int $sopirId)
     {
-        return Pesanan::with(['penumpang.profil', 'rute', 'kendaraan', 'jadwal'])
+        return Pesanan::with(['penumpang.profil', 'rute', 'jadwal'])
             ->where('sopir_id', $sopirId)
             ->whereIn('status', ['menunggu', 'dikonfirmasi'])
             ->latest()
@@ -347,7 +347,7 @@ class SopirController extends Controller
      */
     private function riwayatPesananUntukSopir(?int $sopirId)
     {
-        return Pesanan::with(['penumpang', 'rute', 'kendaraan', 'jadwal'])
+        return Pesanan::with(['penumpang', 'rute', 'jadwal'])
             ->where('sopir_id', $sopirId)
             ->whereIn('status', ['selesai', 'dibatalkan'])
             ->latest()

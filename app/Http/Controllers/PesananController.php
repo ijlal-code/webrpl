@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\JadwalSopir;
-use App\Models\Kendaraan;
 use App\Models\Pesanan;
 use App\Models\Rute;
 use Illuminate\Http\Request;
@@ -13,17 +12,16 @@ class PesananController extends Controller
     public function index()
     {
         return view('pesanan.index', [
-            'pesanan' => Pesanan::with(['penumpang', 'sopir', 'kendaraan', 'rute', 'jadwal'])->latest()->get(),
+            'pesanan' => Pesanan::with(['penumpang', 'sopir', 'rute', 'jadwal'])->latest()->get(),
         ]);
     }
 
     public function create()
     {
         return view('pesanan.index', [
-            'pesanan' => Pesanan::with(['penumpang', 'sopir', 'kendaraan', 'rute', 'jadwal'])->get(),
+            'pesanan' => Pesanan::with(['penumpang', 'sopir', 'rute', 'jadwal'])->get(),
             'formMode' => 'create',
             'rute' => Rute::all(),
-            'kendaraan' => Kendaraan::all(),
         ]);
     }
 
@@ -32,18 +30,12 @@ class PesananController extends Controller
         $data = $request->validate([
             'user_id' => 'required|exists:users,id',
             'rute_id' => 'required_without:jadwal_id|nullable|exists:rutes,id',
-            'kendaraan_id' => 'nullable|exists:kendaraans,id',
             'jadwal_id' => 'nullable|exists:jadwal_sopirs,id',
             'tanggal_keberangkatan' => 'required_without:jadwal_id|nullable|date',
             'jam_keberangkatan' => 'required_without:jadwal_id|nullable',
             'status' => 'required|in:menunggu,dikonfirmasi,selesai,dibatalkan',
             'catatan' => 'nullable|string',
         ]);
-
-        if ($data['kendaraan_id']) {
-            $kendaraan = Kendaraan::find($data['kendaraan_id']);
-            $data['sopir_id'] = $kendaraan?->sopir_id;
-        }
 
         if (!empty($data['jadwal_id'])) {
             $jadwal = JadwalSopir::with('sopir')->find($data['jadwal_id']);

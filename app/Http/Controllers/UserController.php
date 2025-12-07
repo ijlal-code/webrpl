@@ -77,7 +77,7 @@ class UserController extends Controller
      */
     public function pesanan()
     {
-        $pesanan = Pesanan::with(['rute', 'kendaraan', 'sopir', 'jadwal'])
+        $pesanan = Pesanan::with(['rute', 'sopir', 'jadwal'])
             ->where('user_id', auth()->id())
             ->whereIn('status', ['menunggu', 'dikonfirmasi'])
             ->latest()
@@ -167,7 +167,7 @@ class UserController extends Controller
      */
     public function riwayat()
     {
-        $pesanan = Pesanan::with(['rute', 'kendaraan', 'sopir', 'jadwal'])
+        $pesanan = Pesanan::with(['rute', 'sopir', 'jadwal'])
             ->where('user_id', auth()->id())
             ->whereIn('status', ['selesai', 'dibatalkan'])
             ->latest()

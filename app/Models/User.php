@@ -15,16 +15,6 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
-    public function arsip()
-    {
-        return $this->hasMany(Arsip::class);
-    }
-
-    public function aksesArsips()
-    {
-        return $this->belongsToMany(Arsip::class, 'arsip_user')->using(ArsipUser::class)->withTimestamps();
-    }
-
     public function profil()
     {
         return $this->hasOne(Profil::class);

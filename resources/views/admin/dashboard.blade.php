@@ -80,7 +80,6 @@
                     <tr>
                         <th>Penumpang</th>
                         <th>Sopir</th>
-                        <th>Kendaraan</th>
                         <th>Rute</th>
                         <th>Waktu</th>
                         <th>Status</th>
@@ -91,7 +90,6 @@
                         <tr>
                             <td>{{ $item->penumpang->name ?? '-' }}</td>
                             <td>{{ $item->sopir->nama ?? '-' }}</td>
-                            <td>{{ $item->kendaraan->nama ?? '-' }}</td>
                             <td>{{ $item->rute->nama_rute ?? '-' }}</td>
                             <td>{{ $item->tanggal_keberangkatan }} {{ $item->jam_keberangkatan }}</td>
                             <td>{{ $item->status }}</td>

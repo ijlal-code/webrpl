@@ -12,7 +12,6 @@ class Pesanan extends Model
     protected $fillable = [
         'user_id',
         'sopir_id',
-        'kendaraan_id',
         'jadwal_id',
         'rute_id',
         'tanggal_keberangkatan',
@@ -30,11 +29,6 @@ class Pesanan extends Model
     public function sopir()
     {
         return $this->belongsTo(Sopir::class);
-    }
-
-    public function kendaraan()
-    {
-        return $this->belongsTo(Kendaraan::class);
     }
 
     public function rute()

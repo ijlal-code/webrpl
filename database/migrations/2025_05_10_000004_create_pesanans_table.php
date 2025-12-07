@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('sopir_id')->nullable()->constrained('sopirs')->nullOnDelete();
-            $table->foreignId('kendaraan_id')->nullable()->constrained('kendaraans')->nullOnDelete();
             $table->foreignId('rute_id')->constrained('rutes')->cascadeOnDelete();
             $table->date('tanggal_keberangkatan');
             $table->time('jam_keberangkatan');
