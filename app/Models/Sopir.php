@@ -22,11 +22,6 @@ class Sopir extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function kendaraans()
-    {
-        return $this->hasMany(Kendaraan::class);
-    }
-
     public function pesanans()
     {
         return $this->hasMany(Pesanan::class);

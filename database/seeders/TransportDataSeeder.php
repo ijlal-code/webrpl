@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\JadwalSopir;
-use App\Models\Kendaraan;
 use App\Models\Pesanan;
 use App\Models\Rute;
 use App\Models\Sopir;
@@ -38,22 +37,6 @@ class TransportDataSeeder extends Seeder
 
         $sopirList = Sopir::with('user')->get();
 
-        $kendaraanTemplates = [
-            ['nama' => 'Elf 01', 'plat_nomor' => 'DD 1001 AA', 'jenis' => 'Minibus', 'kapasitas' => 12, 'status' => 'siap'],
-            ['nama' => 'Elf 02', 'plat_nomor' => 'DD 1002 AA', 'jenis' => 'Minibus', 'kapasitas' => 12, 'status' => 'siap'],
-            ['nama' => 'Bus 01', 'plat_nomor' => 'DD 2001 BB', 'jenis' => 'Bus', 'kapasitas' => 40, 'status' => 'jalan'],
-            ['nama' => 'SUV 01', 'plat_nomor' => 'DD 4001 DD', 'jenis' => 'SUV', 'kapasitas' => 6, 'status' => 'siap'],
-        ];
-
-        foreach ($kendaraanTemplates as $index => $data) {
-            $sopir = $sopirList[$index % $sopirList->count()] ?? null;
-
-            Kendaraan::updateOrCreate(
-                ['plat_nomor' => $data['plat_nomor']],
-                array_merge($data, ['sopir_id' => $sopir?->id])
-            );
-        }
-
         $jadwalList = collect();
         $statusJadwal = ['siap_berangkat', 'dalam_perjalanan'];
 
@@ -85,7 +68,6 @@ class TransportDataSeeder extends Seeder
         foreach ($jadwalList as $index => $jadwal) {
             $penumpangTerpilih = $penumpang[$index % $penumpang->count()];
             $status = $statusPesanan[$index % count($statusPesanan)];
-            $kendaraanId = Kendaraan::where('sopir_id', $jadwal->sopir_id)->inRandomOrder()->value('id');
 
             Pesanan::updateOrCreate(
                 [
@@ -94,7 +76,6 @@ class TransportDataSeeder extends Seeder
                 ],
                 [
                     'sopir_id' => $jadwal->sopir_id,
-                    'kendaraan_id' => $kendaraanId,
                     'rute_id' => $jadwal->rute_id,
                     'tanggal_keberangkatan' => $jadwal->tanggal_keberangkatan,
                     'jam_keberangkatan' => $jadwal->jam_keberangkatan,
@@ -114,7 +95,6 @@ class TransportDataSeeder extends Seeder
                     ],
                     [
                         'sopir_id' => $jadwal->sopir_id,
-                        'kendaraan_id' => $kendaraanId,
                         'rute_id' => $jadwal->rute_id,
                         'tanggal_keberangkatan' => $jadwal->tanggal_keberangkatan,
                         'jam_keberangkatan' => $jadwal->jam_keberangkatan,

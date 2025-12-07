@@ -1,99 +1,47 @@
 <div align="center">
 
-# MANSIP  
-### *(Manajemen Arsip Kantor Desa)*
-
-<br>
+# Aplikasi Transportasi
 
 <p align="center">
    <img src="LogUnsulbar.png" alt="Logo" width="300"/>
- </p>
+</p>
 
-<br>
-
-<h2>Ainun Ijlal</h2>
-<h2>D0223038</h2>
-
-<br>
-
-<h4>Framework Web Based</h4>
-<h4>2025</h4>
+<h4>Framework Web Based · 2025</h4>
 
 </div>
 
-## Role dan Fitur-fiturnya
+## Ringkasan
+Aplikasi ini membantu admin, sopir, dan penumpang mengelola pemesanan perjalanan antar kota. Sistem mendukung pengelolaan rute, jadwal sopir, serta pemesanan dan riwayat perjalanan penumpang.
 
+## Peran dan Fitur Utama
 ### Admin
-- Mengelola pengguna (CRUD User)
-- Melihat semua arsip
+- Kelola pengguna (CRUD User).
+- Kelola rute dan jadwal sopir.
+- Memantau pesanan terbaru dan laporan riwayat.
 
-### Sekretaris Desa
-- Upload arsip baru
-- Mengelola kategori arsip
-- Melihat dan mengedit arsip yang diunggah
-- Menghapus arsip
+### Sopir
+- Melihat dan memperbarui jadwal keberangkatan.
+- Mengonfirmasi, menyelesaikan, atau menghapus pesanan miliknya.
+- Memantau riwayat pesanan yang sudah selesai atau dibatalkan.
 
-### Kepala Desa
-- Melihat daftar arsip
-- Mencetak / mengunduh arsip (PDF / DOCX)
+### Penumpang
+- Melihat jadwal yang tersedia dan membuat pesanan.
+- Memeriksa status pesanan aktif serta riwayat perjalanan.
+- Membatalkan pesanan dengan alasan yang jelas jika diperlukan.
 
-## Tabel-tabel database beserta field dan tipe datanya
+## Tabel Database
+- **users**: data akun pengguna beserta peran (admin, sopir, penumpang).
+- **profils**: detail profil pengguna (telepon, pengalaman sopir, dsb.).
+- **rutes**: daftar rute perjalanan.
+- **sopirs**: data sopir beserta keterkaitan dengan pengguna.
+- **jadwal_sopirs**: jadwal keberangkatan sopir per rute.
+- **pesanans**: pesanan perjalanan penumpang beserta statusnya.
 
-### Tabel `users`
-| Field       | Tipe Data    | Keterangan                  |
-|-------------|--------------|-----------------------------|
-| id          | BIGINT       | Primary Key                 |
-| name        | VARCHAR(255) | Nama Pengguna               |
-| email       | VARCHAR(255) | Email (unik)                |
-| password    | VARCHAR(255) | Password                    |
-| role        | ENUM         | Admin, Sekretaris, Kepala Desa |
-| created_at  | TIMESTAMP    | Timestamp dibuat            |
-| updated_at  | TIMESTAMP    | Timestamp diperbarui        |
-
-### Tabel `kategori_arsip`
-| Field         | Tipe Data    | Keterangan            |
-|---------------|--------------|-----------------------|
-| id            | BIGINT       | Primary Key           |
-| nama_kategori | VARCHAR(255) | Nama Kategori Arsip   |
-| created_at    | TIMESTAMP    | Timestamp dibuat      |
-| updated_at    | TIMESTAMP    | Timestamp diperbarui  |
-
-### Tabel `arsip`
-| Field         | Tipe Data    | Keterangan                       |
-|---------------|--------------|----------------------------------|
-| id            | BIGINT       | Primary Key                      |
-| judul_arsip   | VARCHAR(255) | Nama arsip / judul               |
-| file_arsip    | VARCHAR(255) | Nama file yang diupload          |
-| tanggal_upload| DATE         | Tanggal pengarsipan              |
-| kategori_id   | BIGINT       | Foreign Key ke `kategori_arsip` |
-| user_id       | BIGINT       | Foreign Key ke `users`           |
-| created_at    | TIMESTAMP    | Timestamp dibuat                 |
-| updated_at    | TIMESTAMP    | Timestamp diperbarui             |
-
-### Tabel `profiles` (One-to-One)
-| Field      | Tipe Data    | Keterangan                   |
-|------------|--------------|------------------------------|
-| id         | BIGINT       | Primary Key                  |
-| user_id    | BIGINT       | Foreign Key ke `users`       |
-| alamat     | String       | Alamat pengguna              |
-| no_hp      | String       | Nomor HP pengguna            |
-| created_at | TIMESTAMP    | Timestamp dibuat             |
-| updated_at | TIMESTAMP    | Timestamp diperbarui         |
-
-### Tabel `arsip_user` (Many-to-Many - Pivot)
-| Field      | Tipe Data    | Keterangan                           |
-|------------|--------------|--------------------------------------|
-| id         | BIGINT       | Primary Key                          |
-| arsip_id   | BIGINT       | Foreign Key ke `arsip`               |
-| user_id    | BIGINT       | Foreign Key ke `users`               |
-| created_at | TIMESTAMP    | Timestamp dibuat                     |
-| updated_at | TIMESTAMP    | Timestamp diperbarui                 |
-
-## Jenis relasi dan tabel yang berelasi
-
-- **One-to-Many:** `users` → `arsip`  
-- **One-to-Many:** `kategori_arsip` → `arsip`  
-- **One-to-One:** `users` ↔ `profiles`  
-- **Many-to-Many:** `arsip` ↔ `users` melalui `arsip_user`
-
-
+## Relasi Penting
+- One-to-One: `users` ↔ `profils` (profil pengguna).
+- One-to-One: `users` ↔ `sopirs` (akun sopir).
+- One-to-Many: `sopirs` → `jadwal_sopirs`.
+- One-to-Many: `rutes` → `jadwal_sopirs`.
+- One-to-Many: `users` (penumpang) → `pesanans`.
+- One-to-Many: `sopirs` → `pesanans`.
+- One-to-Many: `rutes` → `pesanans`.

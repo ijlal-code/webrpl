@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Rute;
-use App\Models\Kendaraan;
 
 class PesananIntegrationTest extends TestCase
 {
@@ -19,20 +18,12 @@ class PesananIntegrationTest extends TestCase
         // 1. Buat User Penumpang
         $penumpang = User::factory()->create(['role' => 'penumpang']);
         
-        // 2. Buat Data Master (Rute & Kendaraan) yang dibutuhkan untuk pesanan
+        // 2. Buat Data Master Rute yang dibutuhkan untuk pesanan
         $rute = Rute::create([
             'nama_rute' => 'Rute Pagi',
-            'asal' => 'Kampus', 
+            'asal' => 'Kampus',
             'tujuan' => 'Pasar',
             'jarak_km' => 10
-        ]);
-        
-        $kendaraan = Kendaraan::create([
-            'nama' => 'Bus Kampus 01',
-            'plat_nomor' => 'DC 1234 XY',
-            'jenis' => 'Bus',
-            'kapasitas' => 30,
-            'status' => 'siap'
         ]);
 
         // Login sebagai penumpang
@@ -43,7 +34,6 @@ class PesananIntegrationTest extends TestCase
         $response = $this->post(route('penumpang.pesan'), [
             'user_id' => $penumpang->id,
             'rute_id' => $rute->id,
-            'kendaraan_id' => $kendaraan->id,
             'tanggal_keberangkatan' => '2025-06-01',
             'jam_keberangkatan' => '08:00',
             'status' => 'menunggu',

@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Models\User;
 use App\Models\Sopir;
-use App\Models\Kendaraan;
 use App\Models\Rute;
 use App\Models\Pesanan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
