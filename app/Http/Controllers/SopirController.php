@@ -70,6 +70,24 @@ class SopirController extends Controller
     }
 
     /**
+     * Konfirmasi seluruh pesanan yang masih menunggu untuk sopir yang sedang login.
+     */
+    public function konfirmasiSemua()
+    {
+        $sopirId = $this->getSopirId();
+
+        $totalDikonfirmasi = Pesanan::where('sopir_id', $sopirId)
+            ->where('status', 'menunggu')
+            ->update(['status' => 'dikonfirmasi']);
+
+        if ($totalDikonfirmasi === 0) {
+            return back()->withErrors(['pesanan' => 'Tidak ada pesanan menunggu untuk dikonfirmasi.']);
+        }
+
+        return back()->with('success', "Berhasil mengonfirmasi {$totalDikonfirmasi} pesanan menunggu.");
+    }
+
+    /**
      * Tandai pesanan telah selesai oleh sopir yang sesuai.
      */
     public function selesaikan(Pesanan $pesanan)

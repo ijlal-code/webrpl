@@ -8,7 +8,22 @@
 @endphp
 
 <div class="card">
-    <div class="card-header">Pesanan Masuk</div>
+    <div class="card-header d-flex justify-content-between align-items-center gap-3">
+        <div>
+            <div class="fw-semibold">Pesanan Masuk</div>
+            <small class="text-muted">Kelola pesanan penumpang yang terkait dengan jadwal Anda.</small>
+        </div>
+        @php $totalMenunggu = $pesanan->where('status', 'menunggu')->count(); @endphp
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge text-bg-warning text-uppercase">Menunggu: {{ $totalMenunggu }}</span>
+            @if($totalMenunggu > 0)
+                <form method="POST" action="{{ route('sopir.pesanan.konfirmasi.semua') }}" onsubmit="return confirm('Konfirmasi semua pesanan menunggu?');">
+                    @csrf
+                    <button class="btn btn-sm btn-success">Konfirmasi Semua</button>
+                </form>
+            @endif
+        </div>
+    </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
