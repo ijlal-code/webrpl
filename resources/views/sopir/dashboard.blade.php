@@ -20,7 +20,7 @@
     @endif
 
     <div class="row g-3 mb-4">
-        <div class="col-lg-6 col-xl-5">
+        <div class="col-12">
             @include('sopir.partials.jadwal-form')
         </div>
     </div>

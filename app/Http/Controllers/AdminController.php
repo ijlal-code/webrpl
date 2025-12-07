@@ -20,7 +20,7 @@ class AdminController extends Controller
             'sopir' => User::where('role', 'sopir')->count(),
             'kendaraan' => Kendaraan::count(),
             'pesanan' => Pesanan::count(),
-            'jadwal_aktif' => JadwalSopir::where('status', 'aktif')->count(),
+            'jadwal_aktif' => JadwalSopir::where('status', 'siap_berangkat')->count(),
         ];
 
         // Kirim data ke tampilan dashboard admin yang sudah diganti namanya lebih deskriptif.
@@ -54,7 +54,7 @@ class AdminController extends Controller
                 'sopir' => User::where('role', 'sopir')->count(),
                 'kendaraan' => Kendaraan::count(),
                 'pesanan' => $pesanan->count(),
-                'jadwal_aktif' => JadwalSopir::where('status', 'aktif')->count(),
+                'jadwal_aktif' => JadwalSopir::where('status', 'siap_berangkat')->count(),
             ],
             'pesananTerbaru' => $pesanan->take(5),
             'laporan' => $pesanan,

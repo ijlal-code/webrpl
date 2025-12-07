@@ -29,10 +29,6 @@
                             <label class="form-label">Password</label>
                             <input type="password" name="password" class="form-control" required>
                         </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                            <label class="form-check-label" for="remember">Ingat saya</label>
-                        </div>
                         <button class="btn btn-primary w-100" type="submit">Masuk</button>
                     </form>
                     <p class="mt-3 text-center">Belum punya akun? <a href="{{ route('register') }}">Daftar</a></p>

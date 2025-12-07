@@ -45,7 +45,7 @@ class UserController extends Controller
 
         $jadwal = JadwalSopir::with('sopir')->findOrFail($data['jadwal_id']);
 
-        if ($jadwal->status !== 'aktif') {
+        if ($jadwal->status !== 'siap_berangkat') {
             return back()->withErrors(['jadwal_id' => 'Jadwal ini tidak tersedia untuk dipesan.']);
         }
 
@@ -223,7 +223,7 @@ class UserController extends Controller
 
         if ($riwayat->isEmpty()) {
             return JadwalSopir::with(['sopir.user', 'rute'])
-                ->where('status', 'aktif')
+                ->where('status', 'siap_berangkat')
                 ->orderBy('tanggal_keberangkatan')
                 ->orderBy('jam_keberangkatan')
                 ->take(3)
@@ -231,7 +231,7 @@ class UserController extends Controller
         }
 
         $jadwal = JadwalSopir::with(['sopir.user', 'rute'])
-            ->where('status', 'aktif')
+            ->where('status', 'siap_berangkat')
             ->where(function ($query) use ($riwayat) {
                 foreach ($riwayat as $preferensi) {
                     $query->orWhere(function ($sub) use ($preferensi) {
@@ -245,7 +245,7 @@ class UserController extends Controller
             ->get();
 
         return $jadwal->isNotEmpty() ? $jadwal : JadwalSopir::with(['sopir.user', 'rute'])
-            ->where('status', 'aktif')
+            ->where('status', 'siap_berangkat')
             ->orderBy('tanggal_keberangkatan')
             ->orderBy('jam_keberangkatan')
             ->take(3)
