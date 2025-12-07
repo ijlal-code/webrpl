@@ -52,6 +52,7 @@ Route::middleware(['auth', 'sopir'])->group(function () {
     Route::get('/sopir/jadwal', [SopirController::class, 'jadwal'])->name('sopir.jadwal.index');
     Route::get('/sopir/pesanan', [SopirController::class, 'pesanan'])->name('sopir.pesanan.index');
     Route::get('/sopir/pesanan/riwayat', [SopirController::class, 'riwayat'])->name('sopir.pesanan.riwayat');
+    Route::post('/sopir/pesanan/konfirmasi-semua', [SopirController::class, 'konfirmasiSemua'])->name('sopir.pesanan.konfirmasi.semua');
     Route::post('/sopir/pesanan/{pesanan}/konfirmasi', [SopirController::class, 'konfirmasi'])->name('sopir.pesanan.konfirmasi');
     Route::post('/sopir/pesanan/{pesanan}/selesai', [SopirController::class, 'selesaikan'])->name('sopir.pesanan.selesai');
     Route::delete('/sopir/pesanan/{pesanan}', [SopirController::class, 'hapusPesanan'])->name('sopir.pesanan.hapus');
