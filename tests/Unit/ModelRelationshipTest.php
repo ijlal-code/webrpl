@@ -36,8 +36,6 @@ class ModelRelationshipTest extends TestCase
             'nama_rute' => 'Test Rute',
             'asal' => 'A',
             'tujuan' => 'B',
-            'jarak_km' => 10,
-            'perkiraan_waktu' => '01:00'
         ]);
 
         $pesanan = Pesanan::create([

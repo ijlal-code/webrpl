@@ -23,7 +23,6 @@ class PesananIntegrationTest extends TestCase
             'nama_rute' => 'Rute Pagi',
             'asal' => 'Kampus',
             'tujuan' => 'Pasar',
-            'jarak_km' => 10
         ]);
 
         // Login sebagai penumpang

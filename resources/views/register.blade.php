@@ -56,11 +56,21 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <div class="input-group">
+                                <input type="password" name="password" id="register-password" class="form-control" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="register-password" aria-label="Tampilkan password">
+                                    👁️
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Konfirmasi Password</label>
-                            <input type="password" name="password_confirmation" class="form-control" required>
+                            <div class="input-group">
+                                <input type="password" name="password_confirmation" id="register-password-confirmation" class="form-control" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="register-password-confirmation" aria-label="Tampilkan password">
+                                    👁️
+                                </button>
+                            </div>
                         </div>
                         <button class="btn btn-success w-100" type="submit">Daftar</button>
                     </form>
@@ -75,6 +85,7 @@
         const roleSelect = document.getElementById('role-select');
         const sopirFields = document.querySelectorAll('.sopir-field');
         const teleponInput = document.querySelector('input[name="telepon"]');
+        const toggleButtons = document.querySelectorAll('.toggle-password');
 
         const toggleSopirFields = () => {
             const isSopir = roleSelect.value === 'sopir';
@@ -84,6 +95,19 @@
 
         roleSelect.addEventListener('change', toggleSopirFields);
         toggleSopirFields();
+
+        toggleButtons.forEach((button) => {
+            const input = document.getElementById(button.dataset.target);
+
+            if (!input) return;
+
+            button.addEventListener('click', () => {
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                button.textContent = isHidden ? '🙈' : '👁️';
+                button.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+            });
+        });
     });
 </script>
 </body>

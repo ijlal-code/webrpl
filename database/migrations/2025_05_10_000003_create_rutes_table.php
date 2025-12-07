@@ -13,8 +13,6 @@ return new class extends Migration
             $table->string('nama_rute');
             $table->string('asal');
             $table->string('tujuan');
-            $table->decimal('jarak_km', 8, 2)->nullable();
-            $table->time('perkiraan_waktu')->nullable();
             $table->timestamps();
         });
     }

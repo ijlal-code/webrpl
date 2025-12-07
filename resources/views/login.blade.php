@@ -27,7 +27,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <div class="input-group">
+                                <input type="password" name="password" id="login-password" class="form-control" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="login-password" aria-label="Tampilkan password">
+                                    👁️
+                                </button>
+                            </div>
                         </div>
                         <button class="btn btn-primary w-100" type="submit">Masuk</button>
                     </form>
@@ -37,5 +42,22 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.toggle-password').forEach((button) => {
+            const targetId = button.dataset.target;
+            const input = document.getElementById(targetId);
+
+            if (!input) return;
+
+            button.addEventListener('click', () => {
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                button.textContent = isHidden ? '🙈' : '👁️';
+                button.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+            });
+        });
+    });
+</script>
 </body>
 </html>
