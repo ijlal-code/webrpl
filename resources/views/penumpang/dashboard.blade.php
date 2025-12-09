@@ -49,7 +49,7 @@
                             </div>
                             <div>
                                 <label class="form-label">Catatan untuk sopir (opsional)</label>
-                                <input type="text" name="catatan" class="form-control" value="{{ old('catatan') }}" placeholder="Contoh: jemput di depan pasar">
+                                <input type="text" name="catatan" class="form-control" value="{{ old('catatan') }}" placeholder="Contoh: mohon tunggu pak">
                             </div>
                             <button class="btn btn-primary" type="submit">Pesan Jadwal Rekomendasi</button>
                         </form>

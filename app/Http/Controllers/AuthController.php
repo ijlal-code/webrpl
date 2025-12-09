@@ -75,7 +75,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return back()->withErrors(['email' => 'Kredensial tidak valid'])->withInput();
+        return back()->withErrors(['email' => 'Password atau email tidak sesuai'])->withInput();
     }
 
     public function logout(Request $request)
