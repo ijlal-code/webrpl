@@ -13,7 +13,7 @@ class User extends Authenticatable
 
     protected $fillable = ['name', 'email', 'password', 'phone', 'role'];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password'];
 
     public function profil()
     {

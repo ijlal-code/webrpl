@@ -58,8 +58,9 @@
                             <label class="form-label">Password</label>
                             <div class="input-group">
                                 <input type="password" name="password" id="register-password" class="form-control" required>
+                                {{-- UBAH DI SINI: Ganti icon dengan teks --}}
                                 <button class="btn btn-outline-secondary toggle-password" type="button" data-target="register-password" aria-label="Tampilkan password">
-                                    👁️
+                                    Tampilkan
                                 </button>
                             </div>
                         </div>
@@ -67,8 +68,9 @@
                             <label class="form-label">Konfirmasi Password</label>
                             <div class="input-group">
                                 <input type="password" name="password_confirmation" id="register-password-confirmation" class="form-control" required>
+                                {{-- UBAH DI SINI: Ganti icon dengan teks --}}
                                 <button class="btn btn-outline-secondary toggle-password" type="button" data-target="register-password-confirmation" aria-label="Tampilkan password">
-                                    👁️
+                                    Tampilkan
                                 </button>
                             </div>
                         </div>
@@ -104,7 +106,10 @@
             button.addEventListener('click', () => {
                 const isHidden = input.type === 'password';
                 input.type = isHidden ? 'text' : 'password';
-                button.textContent = isHidden ? '🙈' : '👁️';
+                
+                // UBAH DI SINI: Logika ganti teks Tampilkan/Sembunyikan
+                button.textContent = isHidden ? 'Sembunyikan' : 'Tampilkan';
+                
                 button.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
             });
         });

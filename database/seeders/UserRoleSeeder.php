@@ -48,7 +48,7 @@ class UserRoleSeeder extends Seeder
                 'password' => $defaultPassword,
                 'role' => 'admin',
                 'phone' => '0811111111',
-                'remember_token' => Str::random(10),
+                
             ]
         );
 
@@ -59,7 +59,7 @@ class UserRoleSeeder extends Seeder
                 'password' => $defaultPassword,
                 'role' => 'penumpang',
                 'phone' => '0822222222',
-                'remember_token' => Str::random(10),
+                
             ]
         );
 
@@ -70,7 +70,7 @@ class UserRoleSeeder extends Seeder
                 'password' => $defaultPassword,
                 'role' => 'sopir',
                 'phone' => '0833333333',
-                'remember_token' => Str::random(10),
+                
             ]
         );
 

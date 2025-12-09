@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('alamat');
             $table->string('nomor_hp');
+            $table->string('jabatan')->nullable();
             $table->timestamps();
         });
         
