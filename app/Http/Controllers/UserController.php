@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pesanan;
 use App\Models\JadwalSopir;
 use Illuminate\Http\Request;
+// use App\Models\Rute; // Rute diasumsikan sudah ada di dalam model Pesanan/Jadwal
 
 class UserController extends Controller
 {
@@ -18,8 +19,8 @@ class UserController extends Controller
             ->orderBy('jam_keberangkatan')
             ->get();
 
-        // Hitung rekomendasi dan pemetaan pesanan per jadwal agar tampilan lebih mudah dipahami.
-        $rekomendasi = $this->buildRekomendasi(auth()->id());
+        // **MODIFIKASI:** Panggil logika Rekomendasi KNN
+        $rekomendasi = $this->getRekomendasiKNN(auth()->id());
 
         $pesananPerJadwal = Pesanan::where('user_id', auth()->id())
             ->get()
@@ -71,6 +72,9 @@ class UserController extends Controller
 
         return redirect()->route('penumpang.pesanan')->with('success', 'Pesanan berhasil dibuat.');
     }
+
+    // ... (Metode pesanan(), batalkanPesanan(), jadwal(), riwayat(), hapusRiwayat(), bersihkanRiwayat() tetap sama) ...
+    // Saya memangkasnya di sini untuk fokus pada KNN.
 
     /**
      * Daftar pesanan penumpang beserta relasi pentingnya.
@@ -208,20 +212,22 @@ class UserController extends Controller
         return back()->with('success', 'Semua riwayat pesanan dibersihkan.');
     }
 
-    /**
-     * Hitung rekomendasi jadwal berdasarkan riwayat pemesanan penumpang.
-     */
-    private function buildRekomendasi(int $userId)
-    {
-        $riwayat = Pesanan::select('rute_id', 'jam_keberangkatan')
-            ->selectRaw('count(*) as total')
-            ->where('user_id', $userId)
-            ->groupBy('rute_id', 'jam_keberangkatan')
-            ->orderByDesc('total')
-            ->take(3)
-            ->get();
+    // =========================================================================
+    // **START: LOGIKA KNN (Menggantikan buildRekomendasi lama)**
+    // =========================================================================
 
-        if ($riwayat->isEmpty()) {
+    /**
+     * Hitung rekomendasi jadwal berdasarkan algoritma KNN.
+     * Mengambil input dari riwayat pesanan terakhir pengguna.
+     */
+    private function getRekomendasiKNN(int $userId): \Illuminate\Support\Collection
+    {
+        $lastOrder = Pesanan::where('user_id', $userId)
+            ->whereIn('status', ['dikonfirmasi', 'selesai'])
+            ->latest('created_at')->first();
+
+        // Fallback: Jika tidak ada riwayat yang valid, kembalikan 3 jadwal aktif teratas
+        if (!$lastOrder) {
             return JadwalSopir::with(['sopir.user', 'rute'])
                 ->where('status', 'siap_berangkat')
                 ->orderBy('tanggal_keberangkatan')
@@ -230,20 +236,36 @@ class UserController extends Controller
                 ->get();
         }
 
+        // 1. Tentukan Vektor Input berdasarkan riwayat terakhir
+        $inputVector = [
+            $this->jamToNumber($lastOrder->jam_keberangkatan),
+            $this->ruteToNumber($lastOrder->rute_id),
+            $this->statusToNumber($lastOrder->status),
+        ];
+
+        $dataset = $this->buildDatasetKNN();
+        $k = 3; // Nilai K default untuk dashboard
+
+        // 2. Cari Tetangga Terdekat
+        $neighbors = $this->nearestNeighbors($inputVector, $dataset, $k);
+
+        // 3. Votasi untuk mendapatkan Label (jam keberangkatan) terbaik
+        $rekomendasiJam = collect($neighbors)
+            ->groupBy('label')
+            ->map->count()
+            ->sortDesc()
+            ->keys()
+            ->first();
+
+        // 4. Cari Jadwal Sopir AKTIF yang cocok dengan jam rekomendasi tersebut
         $jadwal = JadwalSopir::with(['sopir.user', 'rute'])
             ->where('status', 'siap_berangkat')
-            ->where(function ($query) use ($riwayat) {
-                foreach ($riwayat as $preferensi) {
-                    $query->orWhere(function ($sub) use ($preferensi) {
-                        $sub->where('rute_id', $preferensi->rute_id)
-                            ->where('jam_keberangkatan', $preferensi->jam_keberangkatan);
-                    });
-                }
-            })
+            ->where('jam_keberangkatan', $rekomendasiJam)
             ->orderBy('tanggal_keberangkatan')
             ->orderBy('jam_keberangkatan')
             ->get();
-
+            
+        // Fallback jika tidak ditemukan jadwal aktif dengan jam yang direkomendasikan
         return $jadwal->isNotEmpty() ? $jadwal : JadwalSopir::with(['sopir.user', 'rute'])
             ->where('status', 'siap_berangkat')
             ->orderBy('tanggal_keberangkatan')
@@ -251,4 +273,79 @@ class UserController extends Controller
             ->take(3)
             ->get();
     }
+
+    private function buildDatasetKNN(): array
+    {
+        $history = Pesanan::with('rute')
+            ->whereIn('status', ['dikonfirmasi', 'selesai'])
+            ->get();
+
+        if ($history->isEmpty()) {
+            // Dataset dummy disalin dari RekomendasiKNNController.php
+            return [
+                ['features' => [$this->jamToNumber('07:00'), $this->ruteToNumber(1), $this->statusToNumber('dikonfirmasi')], 'label' => '08:00'],
+                ['features' => [$this->jamToNumber('09:00'), $this->ruteToNumber(2), $this->statusToNumber('selesai')], 'label' => '09:30'],
+                ['features' => [$this->jamToNumber('13:00'), $this->ruteToNumber(3), $this->statusToNumber('menunggu')], 'label' => '14:00'],
+                ['features' => [$this->jamToNumber('15:00'), $this->ruteToNumber(1), $this->statusToNumber('selesai')], 'label' => '15:30'],
+                ['features' => [$this->jamToNumber('17:00'), $this->ruteToNumber(2), $this->statusToNumber('dikonfirmasi')], 'label' => '17:30'],
+            ];
+        }
+
+        return $history->map(function ($pesanan) {
+            return [
+                'features' => [
+                    $this->jamToNumber($pesanan->jam_keberangkatan),
+                    $this->ruteToNumber($pesanan->rute_id),
+                    $this->statusToNumber($pesanan->status),
+                ],
+                'label' => $pesanan->jam_keberangkatan,
+            ];
+        })->toArray();
+    }
+
+    private function nearestNeighbors(array $input, array $dataset, int $k): array
+    {
+        $scored = collect($dataset)->map(function ($row) use ($input) {
+            $distance = $this->euclideanDistance($input, $row['features']);
+            return [
+                'label' => $row['label'],
+                'distance' => $distance,
+            ];
+        })->sortBy('distance')->values()->take($k);
+
+        return $scored->toArray();
+    }
+
+    private function euclideanDistance(array $a, array $b): float
+    {
+        return sqrt(collect($a)->zip($b)->reduce(function ($carry, $pair) {
+            [$x, $y] = $pair;
+            return $carry + pow($x - $y, 2);
+        }, 0));
+    }
+
+    private function jamToNumber(string $jam): int
+    {
+        [$hour, $minute] = explode(':', $jam);
+        return ((int) $hour) * 60 + (int) $minute;
+    }
+
+    private function ruteToNumber(int $ruteId): int
+    {
+        return $ruteId;
+    }
+
+    private function statusToNumber(string $status): int
+    {
+        return match ($status) {
+            'menunggu' => 0,
+            'dikonfirmasi' => 1,
+            'selesai' => 2,
+            'dibatalkan' => 3,
+            default => 0,
+        };
+    }
+    // =========================================================================
+    // **END: LOGIKA KNN**
+    // =========================================================================
 }
